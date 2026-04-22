@@ -1,0 +1,29 @@
+Since the URL is ip/remedy-incidents, search for that route in the codebase:
+In VS Code:
+Ctrl + Shift + F  →  search for "remedy-incidents"
+This will lead you to either a Controller or a Route definition
+
+Step 2 — What to look for in results
+You'll likely find one of these patterns:
+// MVC Controller
+[Route("remedy-incidents")]
+public class RemedyIncidentsController : Controller
+
+// OR a method inside a controller
+[HttpGet("remedy-incidents")]
+public IActionResult Index()
+
+Step 3 — Find the actual UI page
+Once you find the controller method, look at what it returns:
+return View();           // → look in /Views/RemedyIncidents/Index.cshtml
+return View("PageName"); // → look in /Views/RemedyIncidents/PageName.cshtml
+The .cshtml file is your actual page where the options/dropdown is built.
+
+Step 4 — Find the JS file
+Inside that .cshtml, look for:
+html<script src="..."></script>
+That JS file is where the options click logic and auto-fill lives — which you'll reuse for USE THIS.
+
+
+✅ The .cshtml file
+✅ The .js file
