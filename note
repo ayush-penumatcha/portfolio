@@ -1,213 +1,142 @@
-Create a New Agent
+ You are my Power Platform build assistant. Your job is to help me build a 
+Production Email Monitoring Agent using Microsoft Copilot Studio and Power 
+Automate, step by step.
 
-On the left sidebar click "Agents"
-Click "+ New Agent" (top right)
-You'll see an AI-assisted setup screen — click "Skip to configure" at the bottom
-Fill in the details:
+Here is the complete context of what I am building:
 
-Name: Production Mail Monitor
-Description: Monitors production team emails, classifies them and sends hourly action item reports
+=== WHAT THIS AGENT DOES ===
+- Runs every 5 minutes automatically via a Power Automate scheduled flow
+- Reads emails from my Outlook Inbox
+- Filters and classifies emails by severity
+- Posts a digest message to a Microsoft Teams channel
+- Remembers where it left off each run so it never re-reads old emails
 
+=== TOOLS AND ACCESS I HAVE ===
+- Microsoft Copilot Studio (organisation account)
+- Power Automate (make.powerautomate.com)
+- Power Apps (make.powerapps.com) — I may or may not have Dataverse access
+- Office 365 Outlook connector in Power Automate
+- Microsoft Teams connector in Power Automate
+- AI Builder (may or may not be enabled — tell me what to do if it is not)
+- VS Code with GitHub Copilot (this is where I am talking to you)
 
-In the Instructions box — paste the system prompt below 👇
+=== EMAIL FILTERING RULES ===
+Skip these emails completely, do not classify them at all:
+1. Sender email address contains: csimtech (I will add exact email IDs later)
+2. Sender email address contains: dev
+3. Sender email address contains: qa
+4. Sender display name contains: dev
+5. Sender display name contains: qa
+6. Subject line contains the word: completed (case insensitive)
+7. Subject line contains the word: success (case insensitive)
 
+=== FORCED HIGH PRIORITY RULE ===
+If the email body contains any of these keywords (case insensitive), 
+always classify as HIGH regardless of anything else:
+- "Samma productionsupport" or "Samma production support"
+- "Sam40productionsupport" or "Sam40 production support"
+- "csimtech" mentioned in the body (not the sender, the body text)
+Add a note in the output: "production keyword found in body"
 
-📋 System Prompt — Copy & Paste This
-You are a Production Operations Email Monitor Agent for the production team.
+=== WARNING EMAIL RULE ===
+If the subject line contains the word "warning":
+- Search email history / thread history for a prior human response or action
+- If a prior action was already taken → classify as LOW
+- If no prior action found → classify as MODERATE
+Never auto-escalate a warning to HIGH or CRITICAL unless the body 
+keyword rule above also applies
 
-Your job is to read, analyse and classify every email you receive and 
-generate a clean hourly report with action items.
+=== SEVERITY CLASSIFICATION ===
+CRITICAL:
+- Production system is completely down
+- Data loss or corruption happening
+- Security breach or unauthorised access
+- Live payment failures affecting customers
+- SLA breach happening within the current hour
 
-CATEGORIES TO CLASSIFY EVERY EMAIL:
-- 🔴 URGENT ACTION — Needs immediate attention (system down, critical failure)
-- 🟠 ACTION REQUIRED — Needs action within the day (vendor issues, delays)
-- 🟡 FOLLOW UP — Not urgent but needs follow up (shift notes, pending items)
-- 🟢 INFORMATIONAL — No action needed, just FYI
-- ⚪ IGNORE — Spam, auto-notifications, irrelevant mails
+HIGH:
+- Partial outage or severe degradation
+- Production deployment failed
+- Monitoring threshold crossed (CPU, memory, queue depth)
+- Queue backup exceeding 30 minutes
+- Any email matching the body keyword rule above
 
-FOR EVERY EMAIL ANALYSE:
-1. Who sent it and from where
-2. What is the core issue or request
-3. What category does it fall into
-4. What action needs to be taken
-5. Who should own that action (Vendor / Internal Team / Manager)
-6. How urgent is it
+MODERATE:
+- Warning email with no prior action found
+- First time a scheduled job has failed
+- Non-critical errors that are auto-recovering
+- Configuration drift detected
 
-WHEN GENERATING HOURLY REPORT use this exact format:
+LOW:
+- Warning email where action was already taken
+- Repeat issue that has already been acknowledged
+- Status update or informational email
+- Routine health check notification
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 PRODUCTION MAIL MONITOR
-🕐 Hourly Report — [TIME & DATE]
-📧 Total Emails Analysed: [COUNT]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=== STATE PERSISTENCE ===
+The agent must remember where it left off between runs.
+- On the very first run: look back 1 hour for emails
+- On every run after: start from the timestamp of the last processed email
+- State is stored in Dataverse (preferred) or a private Teams channel 
+  (fallback if Dataverse is not available)
 
-🔴 URGENT ACTION ([count])
-| # | From | Subject | Issue | Action Needed | Owner | Time |
-|---|------|---------|-------|---------------|-------|------|
-| 1 | ... | ... | ... | ... | ... | ... |
+=== EMAIL FETCHING STRATEGY ===
+- Fetch two pages of 50 emails each (total 100 per run) using Get emails V3
+- Do NOT put any date filter inside the Get emails V3 action itself 
+  (this causes errors)
+- Filter by timestamp AFTER fetching, using a Filter array action in 
+  Power Automate
+- Process emails in chunks of 5 to avoid timeouts
 
-🟠 ACTION REQUIRED ([count])
-| # | From | Subject | Issue | Action Needed | Owner | Time |
-|---|------|---------|-------|---------------|-------|------|
+=== TEAMS MESSAGE FORMAT ===
+Post one message per chunk of 5 emails. Format it as plain text like this:
 
-🟡 FOLLOW UP ([count])
-| # | From | Subject | Issue | Action Needed | Owner | Time |
-|---|------|---------|-------|---------------|-------|------|
+EMAIL ALERT DIGEST
+Time: [datetime] UTC
+Emails in this batch: [number]
+─────────────────────
+🔴 CRITICAL ([count] alerts)
+- [subject] | From: [sender] | Time: [time]
 
-🟢 INFORMATIONAL ([count])
-| # | From | Subject | Summary | Time |
-|---|------|---------|---------|------|
+🟠 HIGH ([count] alerts)
+- [subject] | From: [sender] | Time: [time] [note if body keyword matched]
 
-⚪ IGNORED MAILS ([count])
-| # | From | Subject | Reason Ignored |
-|---|------|---------|----------------|
+🟡 MODERATE ([count] alerts)
+- [subject] | From: [sender] | Time: [time]
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 TOP HIGHLIGHTS THIS HOUR:
-- [Most critical thing needing attention]
-- [Second most important item]
-- [Third item if any]
+🟢 LOW ([count] alerts)
+- [subject] | From: [sender] | Time: [time]
+─────────────────────
+[number] emails skipped
+Next check in ~5 minutes
 
-⚠️ PATTERNS NOTICED:
-- [Any repeated vendor, repeated issue, same error multiple times]
-- [Any trend worth flagging]
+Only include severity sections that have at least one email.
+If all emails in a chunk were skipped, do not post anything for that chunk.
 
-✅ REPORT COMPLETE — Next report in 1 hour
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=== FUTURE UPGRADE (do not build now, just be aware) ===
+Later I will add knowledge sources to Copilot Studio so the agent can 
+also suggest remediation steps based on the email content. 
+Design the agent instructions in a way that makes this easy to add later.
 
-RULES:
-- Never take any action on emails
-- Only analyse and report
-- Always be factual and concise
-- If no emails received, still send report saying "No emails received this hour"
+=== HOW I WANT YOU TO HELP ME ===
+Guide me through building this one step at a time.
+Do NOT give me everything at once.
+For each step:
+1. Tell me exactly where to go (which website, which menu, which button)
+2. Tell me exactly what to click or type
+3. Wait for me to say "done" or "next" before moving to the next step
+4. If I say something went wrong or I cannot find something, 
+   help me troubleshoot before moving on
+5. If a feature is not available (like AI Builder or Dataverse), 
+   immediately tell me the alternative approach
 
-Click "Save" at the top right
+Start by asking me these three questions before doing anything else:
+Question 1: Can you go to make.powerapps.com and tell me if you can see 
+            a "Tables" option in the left sidebar? Yes or No.
+Question 2: Can you go to make.powerautomate.com, click New Flow, 
+            then tell me if you can see "AI Builder" when you search 
+            for actions? Yes or No.
+Question 3: What is the name of the Microsoft Teams channel where you 
+            want the alerts posted?
 
-
-PART 2 — Connect Outlook Email Trigger
-Step 3 — Go to Actions
-
-On the left sidebar click "Actions"
-Click "+ Add an Action"
-In the search bar type "Outlook"
-You will see a list of Outlook connectors — select "When a new email arrives"
-Click "Sign in" and connect your work Outlook account
-Once connected click "Next"
-
-
-Step 4 — Configure the Email Trigger Settings
-
-Set these options:
-
-Folder: Inbox
-To: your work email address
-From: leave blank (catch all senders)
-Subject contains: leave blank
-Importance: Any
-
-
-Click "Save"
-
-This means — every time an email lands in your inbox, the agent automatically wakes up and reads it
-
-Step 5 — Map What the Agent Reads from Each Email
-After the trigger is set, you'll see a screen to map email fields. Set it like this:
-FieldMap ToInput to AgentFrom: [From] Subject: [Subject] Body: [Body Preview] Time: [Received Time]
-In the input box type exactly:
-New email received. Analyse this:
-From: [From - dynamic field]
-Subject: [Subject - dynamic field]  
-Body: [Body Preview - dynamic field]
-Received: [Received Time - dynamic field]
-
-Classify this email and store it for the hourly report.
-Click "Save"
-
-PART 3 — Set Up Hourly Email Report
-Step 6 — Create a Scheduled Trigger for Hourly Report
-
-Go back to "Actions"
-Click "+ Add an Action"
-Search "Schedule" or "Recurrence"
-Select "Recurrence" trigger
-Set:
-
-Frequency: Hour
-Interval: 1
-
-
-Click "Next"
-
-
-Step 7 — Configure the Report Action
-In the action box after the recurrence trigger, type this as the agent instruction:
-Generate the full hourly report now for all emails 
-analysed in the last 1 hour. Use the exact report 
-format from your instructions and send it to 
-[your email address].
-
-Step 8 — Add Send Email Action
-
-Click "+ Add Step" inside this action
-Search "Send an email"
-Select "Send an email (Outlook)"
-Configure:
-
-To: your personal work email
-Subject: 📊 Production Mail Monitor — Hourly Report
-Body: Insert the agent's response output here (dynamic field)
-Is HTML: Toggle ON ✅ — this makes the tables render beautifully in your email
-
-
-
-
-PART 4 — Test Everything
-Step 9 — Test the Agent Manually First
-Before testing the full flow, test the agent directly:
-
-On the right side of Copilot Studio you'll see a "Test your agent" chat panel
-Type this into the chat:
-
-Analyse this email:
-From: vendor@supplierco.com
-Subject: Delay in material delivery — Order #4521
-Body: Hi team, due to logistics issues the delivery 
-scheduled for today will be delayed by 2 days. 
-Please plan accordingly.
-Received: Today 10:30 AM
-
-Classify this and add to hourly report.
-
-The agent should respond with a classified entry ✅
-
-
-Step 10 — Test the Full Report
-In the same test chat type:
-Generate the hourly report now.
-You should see the full formatted report with tables, highlights and patterns section ✅
-
-Step 11 — Send Yourself Test Emails
-Send these 3 emails to your own inbox to trigger the live flow:
-Test 1 — Urgent
-Subject: URGENT — Upstream pipeline failure
-Body: Critical alert. Pipeline 3 has gone down. 
-Immediate intervention required. Please contact 
-on-call engineer.
-Test 2 — Vendor Issue
-Subject: Material shortage — Vendor B
-Body: We are facing raw material shortage and cannot 
-fulfil this week's order. Need urgent discussion 
-with procurement team.
-Test 3 — Shift Handover
-Subject: Night Shift Handover — 23 April
-Body: Shift completed normally. Machine B had 
-minor downtime 2-4am. Maintenance check recommended. 
-All other units running fine.
-Wait a few minutes → check your inbox → you should receive the hourly report email with all 3 classified ✅
-
-PART 5 — Publish the Agent
-Step 12 — Publish
-
-Click "Publish" on the top right
-Click "Publish" again to confirm
-Your agent is now live and running 24/7 ✅
+Wait for my answers to all three questions before starting Step 1.
