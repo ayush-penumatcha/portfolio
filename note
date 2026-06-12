@@ -1,142 +1,295 @@
- You are my Power Platform build assistant. Your job is to help me build a 
-Production Email Monitoring Agent using Microsoft Copilot Studio and Power 
-Automate, step by step.
+Step 1: 
+I am going to build a new page called "Incident Usage Report" in this project 
+step by step. Before I give you tasks, I want you to understand the project first.
 
-Here is the complete context of what I am building:
+Look at the following files I am sharing with you:
+1. The existing incidents page (screenshot / file) — so you understand the 
+   table columns, field names, and how incident data is structured
+2. The existing UI screenshot — so you match our design style exactly
 
-=== WHAT THIS AGENT DOES ===
-- Runs every 5 minutes automatically via a Power Automate scheduled flow
-- Reads emails from my Outlook Inbox
-- Filters and classifies emails by severity
-- Posts a digest message to a Microsoft Teams channel
-- Remembers where it left off each run so it never re-reads old emails
+Do not write any code yet. Just confirm you understand:
+- What columns/fields exist in the incidents table
+- What the UI style looks like (colors, card style, fonts, spacing)
+- What API pattern we follow (how we call APIs in this project)
 
-=== TOOLS AND ACCESS I HAVE ===
-- Microsoft Copilot Studio (organisation account)
-- Power Automate (make.powerautomate.com)
-- Power Apps (make.powerapps.com) — I may or may not have Dataverse access
-- Office 365 Outlook connector in Power Automate
-- Microsoft Teams connector in Power Automate
-- AI Builder (may or may not be enabled — tell me what to do if it is not)
-- VS Code with GitHub Copilot (this is where I am talking to you)
+Reply with a summary of what you understood from these files.
 
-=== EMAIL FILTERING RULES ===
-Skip these emails completely, do not classify them at all:
-1. Sender email address contains: csimtech (I will add exact email IDs later)
-2. Sender email address contains: dev
-3. Sender email address contains: qa
-4. Sender display name contains: dev
-5. Sender display name contains: qa
-6. Subject line contains the word: completed (case insensitive)
-7. Subject line contains the word: success (case insensitive)
+👉 Attach here: Your Remedy incidents page screenshot + your existing UI screenshot
 
-=== FORCED HIGH PRIORITY RULE ===
-If the email body contains any of these keywords (case insensitive), 
-always classify as HIGH regardless of anything else:
-- "Samma productionsupport" or "Samma production support"
-- "Sam40productionsupport" or "Sam40 production support"
-- "csimtech" mentioned in the body (not the sender, the body text)
-Add a note in the output: "production keyword found in body"
 
-=== WARNING EMAIL RULE ===
-If the subject line contains the word "warning":
-- Search email history / thread history for a prior human response or action
-- If a prior action was already taken → classify as LOW
-- If no prior action found → classify as MODERATE
-Never auto-escalate a warning to HIGH or CRITICAL unless the body 
-keyword rule above also applies
 
-=== SEVERITY CLASSIFICATION ===
-CRITICAL:
-- Production system is completely down
-- Data loss or corruption happening
-- Security breach or unauthorised access
-- Live payment failures affecting customers
-- SLA breach happening within the current hour
 
-HIGH:
-- Partial outage or severe degradation
-- Production deployment failed
-- Monitoring threshold crossed (CPU, memory, queue depth)
-- Queue backup exceeding 30 minutes
-- Any email matching the body keyword rule above
+Step 2 — Backend DTOs
+After Copilot confirms it understood Step 1
+Now create the DTO file for the Incident Usage Report feature.
 
-MODERATE:
-- Warning email with no prior action found
-- First time a scheduled job has failed
-- Non-critical errors that are auto-recovering
-- Configuration drift detected
+Create a new file: IncidentUsageDtos.cs
 
-LOW:
-- Warning email where action was already taken
-- Repeat issue that has already been acknowledged
-- Status update or informational email
-- Routine health check notification
+Include these classes:
 
-=== STATE PERSISTENCE ===
-The agent must remember where it left off between runs.
-- On the very first run: look back 1 hour for emails
-- On every run after: start from the timestamp of the last processed email
-- State is stored in Dataverse (preferred) or a private Teams channel 
-  (fallback if Dataverse is not available)
+1. UsageStatsDto
+   - int Total
+   - int AutomationTool
+   - int FrontDoor
+   - double AutomationPct
+   - double FrontDoorPct
+   - List<TrendPointDto> Trend
+   - List<IncidentRowDto> Incidents
 
-=== EMAIL FETCHING STRATEGY ===
-- Fetch two pages of 50 emails each (total 100 per run) using Get emails V3
-- Do NOT put any date filter inside the Get emails V3 action itself 
-  (this causes errors)
-- Filter by timestamp AFTER fetching, using a Filter array action in 
-  Power Automate
-- Process emails in chunks of 5 to avoid timeouts
+2. TrendPointDto
+   - string Label
+   - int AutomationTool
+   - int FrontDoor
 
-=== TEAMS MESSAGE FORMAT ===
-Post one message per chunk of 5 emails. Format it as plain text like this:
+3. IncidentRowDto
+   - Use the EXACT same field names from the incidents table you saw 
+     in the screenshot I shared in Step 1
+   - Add one extra field: string Source  ("automation_tool" or "frontdoor")
 
-EMAIL ALERT DIGEST
-Time: [datetime] UTC
-Emails in this batch: [number]
-─────────────────────
-🔴 CRITICAL ([count] alerts)
-- [subject] | From: [sender] | Time: [time]
+Match the namespace and coding style of existing DTO files in this project.
 
-🟠 HIGH ([count] alerts)
-- [subject] | From: [sender] | Time: [time] [note if body keyword matched]
 
-🟡 MODERATE ([count] alerts)
-- [subject] | From: [sender] | Time: [time]
 
-🟢 LOW ([count] alerts)
-- [subject] | From: [sender] | Time: [time]
-─────────────────────
-[number] emails skipped
-Next check in ~5 minutes
 
-Only include severity sections that have at least one email.
-If all emails in a chunk were skipped, do not post anything for that chunk.
+Step 3 — Backend service
+After DTOs are created
+Create a new service file: IncidentUsageService.cs
 
-=== FUTURE UPGRADE (do not build now, just be aware) ===
-Later I will add knowledge sources to Copilot Studio so the agent can 
-also suggest remediation steps based on the email content. 
-Design the agent instructions in a way that makes this easy to add later.
+This service has one method: GetUsageStats(string range)
+range values: "today", "7d", "30d"
 
-=== HOW I WANT YOU TO HELP ME ===
-Guide me through building this one step at a time.
-Do NOT give me everything at once.
-For each step:
-1. Tell me exactly where to go (which website, which menu, which button)
-2. Tell me exactly what to click or type
-3. Wait for me to say "done" or "next" before moving to the next step
-4. If I say something went wrong or I cannot find something, 
-   help me troubleshoot before moving on
-5. If a feature is not available (like AI Builder or Dataverse), 
-   immediately tell me the alternative approach
+Logic:
+1. Calculate fromDate and toDate based on range value
+2. Query the existing DB Incidents table — fetch all inc_id values 
+   where CreatedAt is between fromDate and toDate, put them in a HashSet
+3. Call the existing Remedy API service to get ALL incidents for the 
+   same date range (use whatever Remedy API method already exists in 
+   this project for fetching incidents by date)
+4. Cross reference:
+   - If Remedy incident ID exists in the HashSet → source = "automation_tool"
+   - If not → source = "frontdoor"
+5. Group by date for trend data:
+   - "today"  → group by hour
+   - "7d"     → group by day
+   - "30d"    → group by week
+6. Return UsageStatsDto with all fields populated
 
-Start by asking me these three questions before doing anything else:
-Question 1: Can you go to make.powerapps.com and tell me if you can see 
-            a "Tables" option in the left sidebar? Yes or No.
-Question 2: Can you go to make.powerautomate.com, click New Flow, 
-            then tell me if you can see "AI Builder" when you search 
-            for actions? Yes or No.
-Question 3: What is the name of the Microsoft Teams channel where you 
-            want the alerts posted?
+Register this service in Program.cs as scoped.
+Match the coding style and dependency injection pattern of existing 
+services in this project.
 
-Wait for my answers to all three questions before starting Step 1.
+
+
+Step 4 — Backend controller
+After service is created
+Create a new controller: IncidentUsageController.cs
+
+- Route: GET /api/incidents/usage-stats
+- Query param: string range (default = "today")
+- Validate range is one of: today, 7d, 30d — return 400 if invalid
+- Call IncidentUsageService.GetUsageStats(range)
+- Return 200 with UsageStatsDto
+
+Match the exact same:
+- Authorization attributes used in other controllers in this project
+- Response wrapper pattern if one exists
+- Logging style
+- Error handling pattern
+
+Do not invent new patterns — copy the style from existing controllers.
+
+
+
+Step 5 — React page skeleton
+Now moving to frontend
+I have already created an empty page called IncidentUsageReport 
+and added it to the sidebar and router. 
+
+Now create the basic skeleton of the page component with:
+1. Page title "Incident creation report" 
+2. Subtitle "Track how incidents are raised — via Automation Tool or FrontDoor"
+3. Three filter tab buttons: Today | Last 7 days | Last month
+   - Pill style toggle, only one active at a time
+   - Active = filled blue, inactive = outlined
+4. useState for activeRange ("today" | "7d" | "30d")
+5. useEffect that calls GET /api/incidents/usage-stats?range={activeRange}
+   whenever activeRange changes
+6. useState for data, loading, error
+7. Show a loading spinner while fetching
+8. Show an inline error with retry button on failure
+
+Do not add any charts or table yet — just the shell, the tabs, 
+and the API wiring.
+
+Match the import style, API call pattern, and component structure 
+of existing pages in this project.
+
+
+
+Step 6 — Metric cards
+After skeleton is working and API is returning data
+Add 4 metric cards below the filter tabs in IncidentUsageReport page.
+
+Use the data from the API response (UsageStatsDto).
+
+Card 1 — "Total incidents"
+- Large number: data.total
+- No subtext
+
+Card 2 — "Via Automation Tool"  
+- Large number: data.automationTool
+- Subtext: data.automationPct + "% of total" in green color
+
+Card 3 — "Via FrontDoor"
+- Large number: data.frontDoor  
+- Subtext: data.frontDoorPct + "% of total" in amber color
+
+Card 4 — "Tool adoption rate"
+- Show data.automationPct as a percentage
+- Show a horizontal progress bar inside the card filled to automationPct %
+- Bar fill color: blue
+
+Layout: 4 cards in a row on desktop, 2x2 on tablet, 1 column on mobile.
+
+Match the exact card style from the UI screenshot I shared in Step 1 — 
+same background color, border radius, font sizes, and spacing.
+
+
+
+
+Step 7 — Pie / doughnut chart
+After cards look correct
+Add a doughnut chart on the LEFT side below the metric cards 
+in IncidentUsageReport page.
+
+Use Recharts PieChart component.
+
+- Data: automationTool count vs frontDoor count from API response
+- innerRadius: 70, outerRadius: 110  (doughnut style)
+- Colors: #185FA5 for Automation Tool, #BA7517 for FrontDoor
+- Show percentage labels on each slice
+
+Center label inside the doughnut hole:
+- Large number showing total count
+- Small text "Total" below it
+- Implement this as a custom label using Recharts customized label
+
+Legend below the chart (custom, not Recharts default):
+- Color swatch + label + count for each slice
+- e.g.  [blue square] Automation Tool  27
+        [amber square] FrontDoor  11
+
+Title above the chart: "Source split"
+
+The right side (trend chart) will be added in the next step — 
+for now just place this chart taking up the left half of the row.
+
+Match the look from the UI screenshot I shared in Step 1.
+
+
+
+Step 8 — Trend line chart
+After doughnut chart looks right
+Add a line chart on the RIGHT side next to the doughnut chart 
+in IncidentUsageReport page.
+
+Use Recharts LineChart component.
+
+- Data: data.trend array from API (Label on X axis)
+- Two lines:
+    Line 1 — Automation Tool: solid line, color #185FA5, with dots
+    Line 2 — FrontDoor: dashed line, color #BA7517, with dots
+- Show CartesianGrid, XAxis, YAxis, Tooltip
+- Tooltip should show both values on hover
+
+Dynamic title above the chart:
+- range = "today"  → "Hourly trend"
+- range = "7d"     → "Daily trend"  
+- range = "30d"    → "Weekly trend"
+
+Custom legend ABOVE the chart (not Recharts default):
+- [solid blue line] Automation Tool
+- [dashed amber line] FrontDoor
+
+Both charts (doughnut + line) should sit side by side in a row.
+On mobile they should stack vertically.
+
+Match the look from the UI screenshot I shared in Step 1.
+
+
+
+Step 9 — Incidents table
+After both charts look correct
+Add a "Recent incidents" table below the charts in IncidentUsageReport page.
+
+Use the EXACT column names from the incidents table screenshot I shared 
+in Step 1, plus one extra column: Source.
+
+Column order:
+Incident ID | Title | Raised By | Source | Created | Status
+
+Source column — colored badge:
+- "automation_tool" → light blue background, blue text, pill shape, 
+  label "Automation tool"
+- "frontdoor"       → light amber background, amber text, pill shape, 
+  label "FrontDoor"
+
+Status column — colored text only (no badge):
+- "Resolved"    → green
+- "In progress" → amber  
+- "Open"        → red
+
+Table styling:
+- Light row dividers, no heavy outer border
+- Header row in muted/gray text, slightly smaller font
+- Alternating row highlight is optional — match existing tables in the project
+- On mobile: wrap the table in a horizontally scrollable container
+
+Show the latest 10 incidents from data.incidents
+
+If data.total is 0, hide the table and show:
+"No incidents found for this period" in the center with a muted icon.
+
+Match the table style from existing pages in this project.
+
+
+
+Step 10 — Final polish prompt
+Run this last after everything is working
+Review the entire IncidentUsageReport page and do a final polish pass:
+
+1. Make sure all 3 filter tabs (Today / Last 7 days / Last month) correctly 
+   re-fetch data and update ALL sections — cards, both charts, and table
+
+2. While loading (between tab clicks) show skeleton placeholders:
+   - Grey placeholder boxes where the cards are
+   - Grey placeholder boxes where the charts are
+   - Do NOT show stale data from the previous tab while loading
+
+3. Check mobile responsiveness:
+   - Cards: 2 columns on mobile
+   - Charts: stacked vertically on mobile
+   - Table: horizontally scrollable on mobile
+
+4. Make sure no hardcoded values exist — everything comes from the API
+
+5. Match the UI screenshot I shared in Step 1 for final visual consistency — 
+   same spacing, font sizes, and colors throughout
+
+Do not change any existing pages or components — only fix IncidentUsageReport.
+
+
+
+
+Your execution order
+Step 1  →  Share screenshots, let Copilot understand the project
+Step 2  →  DTOs
+Step 3  →  Service
+Step 4  →  Controller
+           ↓ Test the API in Postman/Swagger before going to frontend
+Step 5  →  Page skeleton + API wiring
+Step 6  →  Metric cards
+Step 7  →  Doughnut chart
+Step 8  →  Trend line chart
+Step 9  →  Incidents table
+Step 10 →  Final polish
