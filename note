@@ -293,3 +293,40 @@ Step 7  →  Doughnut chart
 Step 8  →  Trend line chart
 Step 9  →  Incidents table
 Step 10 →  Final polish
+
+
+
+------------------------------------------------------------------------------------
+
+1. Step 3 — Service (the cross-reference logic)
+Copilot won't know the exact method name your existing Remedy API service uses. It'll guess something like GetIncidentsByDateRange() but the real name in your project might be different. You'll need to tell it the correct method name.
+
+What to do: When Copilot generates the service, check the Remedy API call it wrote. If the method name is wrong, just tell it — "The actual method is called XYZ, fix that"
+
+2. Step 5 — API base URL and auth headers
+Copilot won't know your API base URL, auth token pattern, or whether you use Axios interceptors. It'll write a generic fetch/axios call.
+
+What to do: Share one existing API call file from your project and say "match this exact pattern"
+
+3. Step 7 — Doughnut center label
+The center total label inside the doughnut hole is always tricky with Recharts. Copilot usually gets the logic right but the positioning sometimes needs a small CSS nudge.
+
+What to do: If it looks off, tell it "the center label is not centered inside the doughnut hole, fix the positioning"
+
+4. Step 10 — Skeleton loading state
+Copilot sometimes does a lazy loading state (just a spinner) instead of proper skeleton placeholders. If that happens just ask it to replace the spinner with skeleton boxes matching the card/chart dimensions.
+
+The honest overall picture
+Steps 1-4   Backend       90% will work first try
+                          10% needs method name corrections
+
+Steps 5-9   Frontend      80% will work first try
+                          20% needs small visual tweaks or 
+                          API pattern corrections
+
+Step 10     Polish        You'll definitely tweak spacing 
+                          and colors manually to match 
+                          your UI exactly
+
+One thing that will save you a lot of time
+Before Step 5, test the backend API in Postman or Swagger first. Make sure /api/incidents/usage-stats?range=today returns real data correctly. If the API is broken and you start building the frontend on top of it, you won't know if bugs are in the frontend or backend — it gets confusing fast.
