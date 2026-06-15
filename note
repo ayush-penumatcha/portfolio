@@ -97,5 +97,39 @@ and the Remedy response DTO if Submitter field is missing.
 
 After making changes, show me:
 1. The updated GetServiceAccountName() method
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------
+
+
+Now add some defensive logging so I can verify the fix is working.
+
+In GetUsageStats(), after the cross-reference step, add debug 
+logging that outputs:
+
+- Total incidents fetched from Remedy: X
+- Service account being used: prod or dev
+- Automation tool incidents (both conditions met): X
+- FrontDoor incidents: X
+- Incidents where ReportingSource = automation BUT submitter 
+  did NOT match service account: X  
+  ← this number should be 0 ideally, 
+    if it is not 0 those are the false positives we were getting before
+
+Use whatever logger (_logger) is already used in this project.
+Remove these logs once confirmed working in nonprod.
 2. The updated IsAutomationToolIncident() method  
 3. Where exactly in GetUsageStats() these are now being called
