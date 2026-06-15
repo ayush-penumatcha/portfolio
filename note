@@ -1,1 +1,101 @@
+In IncidentUsageService.cs, the current segregation logic is wrong.
 
+CURRENT (wrong):
+We are only checking ReportingSource = "automation" to classify 
+an incident as "automation_tool". This is incorrect because users 
+can manually change the ReportingSource value in Remedy to "automation" 
+even for FrontDoor incidents.
+
+CORRECT logic:
+An incident is "automation_tool" ONLY IF BOTH conditions are true:
+  Condition 1 — ReportingSource == "automation"  (from Remedy)
+  Condition 2 — Submitter == account name    (from Remedy)
+
+If either condition is false → it is "frontdoor".
+
+---
+
+CHANGE 1 — Environment-aware service account name
+
+Add a private method or property that returns the correct 
+service account name based on the current environment:
+
+- Read the environment from configuration 
+  (use IConfiguration or IWebHostEnvironment, whichever is 
+  already used in other services in this project)
+- If environment is Production → return "svc.itsm-wrkflw"
+- If environment is anything else (dev, staging, nonprod) 
+  → return "svc.itsm-wrkflw-dev"
+
+Example:
+private string GetServiceAccountName()
+{
+    return _env.IsProduction() 
+        ? "prod" 
+        : "dev";
+}
+
+---
+
+CHANGE 2 — Make sure Remedy API response includes Submitter field
+
+When we call the Remedy API to fetch incidents, make sure the 
+response model (the Remedy incident DTO / mapping class) includes:
+  - Submitter   (the person/account who submitted the incident)
+  - ReportingSource  (already present)
+
+If Submitter is not currently mapped in the Remedy response DTO, 
+add it now. The field name in Remedy API response is [whatever 
+the actual Remedy API field name is — check the existing Remedy 
+API response and map it correctly].
+
+---
+
+CHANGE 3 — Update the cross-reference logic
+
+Replace the current classification logic with this:
+
+string serviceAccount = GetServiceAccountName();
+
+bool IsAutomationToolIncident(RemedyIncidentDto incident)
+{
+    return 
+        !string.IsNullOrEmpty(incident.Submitter) &&
+        incident.Submitter.Equals(serviceAccount, 
+            StringComparison.OrdinalIgnoreCase) 
+        &&
+        !string.IsNullOrEmpty(incident.ReportingSource) &&
+        incident.ReportingSource.Equals("automation", 
+            StringComparison.OrdinalIgnoreCase);
+}
+
+Use this method everywhere we currently classify an incident 
+as automation_tool or frontdoor — in the main counts, 
+trend grouping, and incident row list.
+
+Remove the old logic that was only checking ReportingSource.
+
+---
+
+CHANGE 4 — Update IncidentRowDto source assignment
+
+When building the IncidentRowDto list, use the same 
+IsAutomationToolIncident() method:
+
+Source = IsAutomationToolIncident(i) ? "automation_tool" : "frontdoor"
+
+---
+
+DO NOT change:
+- Any existing Remedy API call method signatures
+- Any DB queries or schema
+- Any frontend code
+- Any other service or controller
+
+Only change the classification logic inside IncidentUsageService.cs
+and the Remedy response DTO if Submitter field is missing.
+
+After making changes, show me:
+1. The updated GetServiceAccountName() method
+2. The updated IsAutomationToolIncident() method  
+3. Where exactly in GetUsageStats() these are now being called
