@@ -1,1 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jira Dashboard Setup Guide — SFTS Team Issue Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-dark:   #0C3B8B;
+    --blue-mid:    #1658A8;
+    --blue-light:  #E8F0FB;
+    --blue-border: #B8D0F5;
+    --purple-dark: #3C3489;
+    --purple-mid:  #534AB7;
+    --purple-light:#EEEDFE;
+    --teal-dark:   #085041;
+    --teal-mid:    #0F6E56;
+    --teal-light:  #E1F5EE;
+    --teal-border: #9FE1CB;
+    --amber-dark:  #633806;
+    --amber-mid:   #BA7517;
+    --amber-light: #FAEEDA;
+    --amber-border:#FAC775;
+    --red-dark:    #791F1F;
+    --red-light:   #FCEBEB;
+    --red-border:  #F7C1C1;
+    --gray-100:    #F8F8F6;
+    --gray-200:    #F1EFE8;
+    --gray-300:    #D3D1C7;
+    --gray-400:    #B4B2A9;
+    --gray-600:    #5F5E5A;
+    --gray-800:    #2C2C2A;
+    --text-primary:#1A1A18;
+    --text-muted:  #5F5E5A;
+    --text-hint:   #888780;
+    --border:      #E2E0D8;
+    --surface:     #FFFFFF;
+    --page-bg:     #F5F4F0;
+    --radius-sm:   6px;
+    --radius-md:   10px;
+    --radius-lg:   14px;
+    --radius-xl:   20px;
+    --shadow-sm:   0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:   0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #0C3B8B 0%, #1658A8 50%, #1a70c8 100%);
+    padding: 48px 40px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+  }
+  .header-badge::before { content: '📋'; }
+  .page-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .page-header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    max-width: 580px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+  .header-meta-item span { color: #fff; font-weight: 500; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .pb-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .pb-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    border: 2px solid var(--gray-300);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--gray-600);
+    flex-shrink: 0;
+  }
+  .pb-dot.done { background: var(--blue-mid); border-color: var(--blue-mid); color: #fff; }
+  .pb-label { font-size: 11px; color: var(--text-hint); margin-left: 6px; white-space: nowrap; }
+  .pb-line { width: 28px; height: 2px; background: var(--gray-300); margin: 0 4px; flex-shrink: 0; }
+  .pb-line.done { background: var(--blue-mid); }
+
+  /* ── MAIN LAYOUT ── */
+  .page-body { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0 24px;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .section-divider-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .step-card:hover { box-shadow: var(--shadow-md); }
+
+  .step-card-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .step-num-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+  .step-num {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--blue-mid);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-num.phase-filter { background: var(--purple-mid); }
+  .step-num.phase-gadget { background: var(--teal-mid); }
+  .step-num.phase-done   { background: #27A06F; }
+  .step-connector { width: 2px; height: 20px; background: var(--gray-200); border-radius: 1px; }
+
+  .step-card-title-area { flex: 1; }
+  .step-phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .tag-setup    { background: var(--blue-light);   color: var(--blue-dark); }
+  .tag-filter   { background: var(--purple-light);  color: var(--purple-dark); }
+  .tag-gadget   { background: var(--teal-light);    color: var(--teal-dark); }
+  .tag-complete { background: #D4F0E4;              color: #0B5E3A; }
+
+  .step-card-title { font-size: 17px; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+  .step-card-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+  .step-card-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── ACTION ROWS ── */
+  .action { display: flex; align-items: flex-start; gap: 14px; }
+  .action-icon-wrap {
+    width: 34px; height: 34px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .ai-blue   { background: var(--blue-light);   }
+  .ai-purple { background: var(--purple-light); }
+  .ai-teal   { background: var(--teal-light);   }
+  .ai-amber  { background: var(--amber-light);  }
+  .ai-gray   { background: var(--gray-200);     }
+
+  .action-content { flex: 1; }
+  .action-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 3px;
+  }
+  .action-text { font-size: 14px; color: var(--text-primary); line-height: 1.65; }
+  .action-text strong { font-weight: 600; color: var(--text-primary); }
+  .action-text code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--gray-200);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--blue-dark);
+  }
+
+  /* ── MOCKUP SCREENS ── */
+  .mockup {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--surface);
+    margin-top: 8px;
+  }
+  .mockup-titlebar {
+    background: #0C3B8B;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mockup-dots { display: flex; gap: 5px; }
+  .mockup-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-r { background: #FF5F57; }
+  .dot-y { background: #FFBD2E; }
+  .dot-g { background: #28C840; }
+  .mockup-url {
+    flex: 1;
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .mockup-navbar {
+    background: #1658A8;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 0;
+  }
+  .mockup-logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    padding: 10px 0;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mockup-logo-icon {
+    width: 20px; height: 20px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .nav-items { display: flex; gap: 0; }
+  .nav-item {
+    padding: 10px 11px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .nav-item.active {
+    color: #fff;
+    border-bottom: 2px solid rgba(255,255,255,0.8);
+    font-weight: 500;
+  }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,0.08); }
+
+  .mockup-dropdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    width: 220px;
+    margin: 12px 16px;
+    box-shadow: var(--shadow-md);
+  }
+  .dd-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .dd-item:hover { background: var(--gray-100); }
+  .dd-item.active { background: var(--blue-light); color: var(--blue-dark); font-weight: 500; }
+  .dd-item.highlight { background: var(--blue-mid); color: #fff; font-weight: 500; }
+  .dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+  .dd-icon { font-size: 15px; width: 20px; text-align: center; }
+
+  /* ── FORM MOCKUPS ── */
+  .form-mock { padding: 20px; }
+  .fm-field { margin-bottom: 14px; }
+  .fm-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .required { color: #E24B4A; }
+  .fm-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--surface);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .fm-input.filled   { border-color: var(--blue-mid); color: var(--blue-dark); background: var(--blue-light); }
+  .fm-input.typed    { border-color: var(--border); color: var(--text-primary); }
+  .fm-input.jql      { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: #FAFAF8; color: var(--teal-dark); border-color: var(--teal-border); }
+  .fm-input:focus    { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(22,88,168,0.12); }
+  .fm-textarea {
+    width: 100%; resize: none; height: 60px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+  }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 6px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--blue-mid); color: #fff; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-secondary { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--gray-100); }
+  .btn-success { background: #27A06F; color: #fff; }
+
+  /* ── LAYOUT PICKER ── */
+  .layout-picker { display: flex; gap: 10px; flex-wrap: wrap; }
+  .layout-opt {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+    min-width: 90px;
+  }
+  .layout-opt:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+  .layout-opt.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+  .layout-opt.selected .lo-label { color: var(--blue-dark); font-weight: 600; }
+  .lo-preview { display: flex; gap: 3px; height: 36px; align-items: stretch; }
+  .lo-col { background: var(--gray-300); border-radius: 3px; }
+  .layout-opt.selected .lo-col { background: var(--blue-mid); }
+  .lo-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .lo-badge {
+    font-size: 10px;
+    background: var(--blue-mid);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  /* ── JQL BOX ── */
+  .jql-block {
+    background: #F4FBF8;
+    border: 1.5px solid var(--teal-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--teal-dark);
+    line-height: 1.9;
+    word-break: break-word;
+  }
+  .jql-block .jql-key   { color: #0F6E56; font-weight: 600; }
+  .jql-block .jql-op    { color: #534AB7; }
+  .jql-block .jql-val   { color: #1658A8; }
+  .jql-block .jql-str   { color: #993C1D; }
+
+  /* ── GADGET LIST ── */
+  .gadget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gadget-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+  .gadget-card:hover { border-color: var(--teal-mid); box-shadow: 0 0 0 3px rgba(15,110,86,0.1); }
+  .gadget-card.recommended { border-color: var(--teal-mid); background: var(--teal-light); }
+  .gadget-top { display: flex; align-items: center; gap: 9px; }
+  .gadget-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .gi-blue   { background: var(--blue-light); }
+  .gi-teal   { background: var(--teal-light); }
+  .gi-purple { background: var(--purple-light); }
+  .gi-amber  { background: var(--amber-light); }
+  .gadget-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .gadget-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .gadget-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .gt-must { background: var(--teal-light); color: var(--teal-dark); }
+  .gt-good { background: var(--amber-light); color: var(--amber-dark); }
+
+  /* ── CONFIG TABLE ── */
+  .config-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .config-table thead tr { background: var(--gray-100); }
+  .config-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .config-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+  }
+  .config-table tr:last-child td { border-bottom: none; }
+  .config-table .field-name { font-weight: 600; color: var(--text-primary); }
+  .config-table .field-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue-dark);
+    background: var(--blue-light);
+    padding: 2px 7px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .config-table .field-why { color: var(--text-muted); font-size: 12px; }
+
+  /* ── INFO / WARN / TIP BOXES ── */
+  .tip-box, .warn-box, .info-box, .success-box {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    line-height: 1.6;
+    border: 1px solid;
+  }
+  .tip-box     { background: var(--teal-light);  border-color: var(--teal-border); color: var(--teal-dark); }
+  .warn-box    { background: var(--amber-light); border-color: var(--amber-border); color: var(--amber-dark); }
+  .info-box    { background: var(--blue-light);  border-color: var(--blue-border);  color: var(--blue-dark); }
+  .success-box { background: #D4F0E4; border-color: #6FCFA0; color: #0B5E3A; }
+  .box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .box-content strong { font-weight: 600; }
+
+  /* ── COLUMN MAP ── */
+  .col-map {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .col-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .col-zone-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-hint);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .col-zone-header .col-num {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    color: var(--gray-600);
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .col-gadget-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .cgp-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── FINAL SUCCESS ── */
+  .final-card {
+    background: linear-gradient(135deg, #0B5E3A 0%, #0F6E56 100%);
+    border-radius: var(--radius-xl);
+    padding: 36px 32px;
+    color: #fff;
+    text-align: center;
+    margin-top: 32px;
+  }
+  .final-icon { font-size: 40px; margin-bottom: 12px; }
+  .final-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .final-card p { font-size: 14px; color: rgba(255,255,255,0.8); max-width: 480px; margin: 0 auto; }
+  .final-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+    text-align: left;
+  }
+  .final-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+  }
+  .check-icon { font-size: 15px; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    background: var(--gray-800);
+    padding: 24px 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .page-footer strong { color: var(--gray-300); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .page-header { padding: 32px 20px 40px; }
+    .page-header h1 { font-size: 22px; }
+    .progress-bar-wrap { padding: 12px 16px; }
+    .page-body { padding: 24px 16px 60px; }
+    .gadget-grid { grid-template-columns: 1fr; }
+    .col-map { grid-template-columns: 1fr; }
+    .header-meta { flex-direction: column; gap: 8px; }
+    .step-card-body { padding: 16px; }
+    .form-mock { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ PAGE HEADER ═══════════════════ -->
+<div class="page-header">
+  <div class="header-badge">Step-by-step guide &nbsp;·&nbsp; Jira Dashboard Setup</div>
+  <h1>SFTS (FTP) Team Issue Tracker<br>Dashboard Setup Guide</h1>
+  <p>A complete walkthrough to create a Jira dashboard that tracks all SFTS-related stories raised by your team and assigned to EMOST &amp; ESJD teams — with story counts, status views, and per-member breakdowns.</p>
+  <div class="header-meta">
+    <div class="header-meta-item">⏱ <span>~15 min</span> to set up</div>
+    <div class="header-meta-item">📁 Projects: <span>EMOST &amp; ESJD</span></div>
+    <div class="header-meta-item">👥 For: <span>Your team members</span></div>
+    <div class="header-meta-item">🔍 Label: <span>SFTS / FTP</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PROGRESS BAR ═══════════════════ -->
+<div class="progress-bar-wrap">
+  <div class="pb-step"><div class="pb-dot done">1</div><span class="pb-label">Open Jira</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">2</div><span class="pb-label">Create Dashboard</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">3</div><span class="pb-label">Choose Layout</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">4</div><span class="pb-label">Create JQL Filter</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">5</div><span class="pb-label">Add Gadgets</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">6</div><span class="pb-label">Configure Each</span></div>
+  <div class="pb-line done"></div>
+  <div class="pb-step"><div class="pb-dot done">7</div><span class="pb-label">Done</span></div>
+</div>
+
+<!-- ═══════════════════ PAGE BODY ═══════════════════ -->
+<div class="page-body">
+
+  <!-- ─── PHASE 1: SETUP ─── -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Phase 1 — Open Jira &amp; Create Dashboard</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-setup">Setup</div>
+        <div class="step-card-title">Log in to Jira and go to Dashboards</div>
+        <div class="step-card-subtitle">This is your starting point — navigate to the Dashboards section from the top menu.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">🌐</div>
+        <div class="action-content">
+          <div class="action-label">Open browser</div>
+          <div class="action-text">Go to your company's Jira URL — something like <code>https://yourcompany.atlassian.net</code> — and log in with your Jira account credentials.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">🖱</div>
+        <div class="action-content">
+          <div class="action-label">Find the top navigation bar</div>
+          <div class="action-text">Once logged in, look at the <strong>top navigation bar</strong>. You will see menu items: <strong>Your Work, Projects, Filters, Dashboards, Teams, Apps</strong>. Click on <strong>"Dashboards"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">📋</div>
+        <div class="action-content">
+          <div class="action-label">Click "Create dashboard" from the dropdown</div>
+          <div class="action-text">A small dropdown appears with options like <strong>"View all dashboards", "Recent dashboards"</strong>. Click the <strong>"Create dashboard"</strong> option highlighted in blue at the bottom of that dropdown.</div>
+        </div>
+      </div>
+
+      <!-- Mockup -->
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">https://yourcompany.atlassian.net/jira</div>
+        </div>
+        <div class="mockup-navbar">
+          <div class="mockup-logo"><div class="mockup-logo-icon">J</div>Your Jira</div>
+          <div class="nav-items">
+            <div class="nav-item">Your work</div>
+            <div class="nav-item">Projects ▾</div>
+            <div class="nav-item">Filters ▾</div>
+            <div class="nav-item active">Dashboards ▾</div>
+            <div class="nav-item">Teams</div>
+          </div>
+        </div>
+        <div class="mockup-dropdown">
+          <div class="dd-item"><span class="dd-icon">⭐</span> View all dashboards</div>
+          <div class="dd-item"><span class="dd-icon">🕒</span> Recent dashboards</div>
+          <div class="dd-sep"></div>
+          <div class="dd-item highlight"><span class="dd-icon">➕</span> Create dashboard  ← Click here</div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <span class="box-icon">💡</span>
+        <div class="box-content">If you don't see <strong>"Create dashboard"</strong> in the dropdown, click <strong>"View all dashboards"</strong> first — then look for a <strong>"Create"</strong> button on that page. Some Jira versions place it there.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-setup">Setup</div>
+        <div class="step-card-title">Fill in your dashboard name, description, and sharing settings</div>
+        <div class="step-card-subtitle">A dialog box opens asking for basic information about your dashboard.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">📝</div>
+        <div class="action-content">
+          <div class="action-label">Name field — what to type</div>
+          <div class="action-text">In the <strong>Name</strong> field, type exactly: <code>SFTS (FTP) Team Issue Tracker</code>. This name will appear at the top of your dashboard and in the Dashboards menu — keep it clear and recognizable for your team.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">📄</div>
+        <div class="action-content">
+          <div class="action-label">Description field — what to type</div>
+          <div class="action-text">In the <strong>Description</strong> field, type: <code>Tracks all SFTS/FTP Jira stories raised by our team and assigned to EMOST and ESJD</code>. This helps anyone who opens the dashboard understand what it is for without needing to ask.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-amber">👥</div>
+        <div class="action-content">
+          <div class="action-label">Shared with — very important</div>
+          <div class="action-text">In the <strong>Shared with</strong> section, search for your team's group name (e.g. <code>sfts-team</code> or your project group). Select it so <strong>all team members can view and use this dashboard</strong> without needing to ask you for access each time. If your team has no group, you can also choose <strong>"Everyone in this Jira"</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Form Mockup -->
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">Create Dashboard — dialog box</div>
+        </div>
+        <div class="form-mock">
+          <div class="fm-field">
+            <div class="fm-label">NAME <span class="required">*</span></div>
+            <input class="fm-input typed" value="SFTS (FTP) Team Issue Tracker" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">DESCRIPTION</div>
+            <textarea class="fm-textarea" readonly>Tracks all SFTS/FTP Jira stories raised by our team and assigned to EMOST and ESJD</textarea>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">SHARED WITH <span class="required">*</span></div>
+            <input class="fm-input filled" value="sfts-team  (your team group name)" readonly>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary">✓ &nbsp;Create</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <span class="box-icon">⚠️</span>
+        <div class="box-content"><strong>Do not skip the sharing step.</strong> If you leave "Shared with" empty or set it to only yourself, your teammates won't be able to see the dashboard even if you send them the link.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num">3</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-setup">Setup</div>
+        <div class="step-card-title">Choose the dashboard layout</div>
+        <div class="step-card-subtitle">After clicking "Create", Jira asks you to pick a column layout for your dashboard.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">🖼</div>
+        <div class="action-content">
+          <div class="action-label">What is a layout?</div>
+          <div class="action-text">A layout defines <strong>how many columns</strong> of gadgets your dashboard will have. Each gadget (like a chart or list) sits inside a column. More columns = more gadgets visible side by side.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">✅</div>
+        <div class="action-content">
+          <div class="action-label">Which layout to select</div>
+          <div class="action-text">Select <strong>3 Columns</strong>. This is the recommended layout because: Left column = Story count by team member, Center column = Full issue list, Right column = Status &amp; project breakdown. This gives you all 4 gadgets visible without scrolling.</div>
+        </div>
+      </div>
+
+      <!-- Layout picker -->
+      <div class="layout-picker" style="padding: 4px 0;">
+        <div class="layout-opt">
+          <div class="lo-preview"><div class="lo-col" style="width:52px"></div></div>
+          <div class="lo-label">1 Column</div>
+        </div>
+        <div class="layout-opt">
+          <div class="lo-preview"><div class="lo-col" style="width:24px"></div><div class="lo-col" style="width:24px"></div></div>
+          <div class="lo-label">2 Columns</div>
+        </div>
+        <div class="layout-opt selected">
+          <div class="lo-preview"><div class="lo-col" style="width:16px"></div><div class="lo-col" style="width:16px"></div><div class="lo-col" style="width:16px"></div></div>
+          <div class="lo-label">3 Columns</div>
+          <div class="lo-badge">✓ Pick this</div>
+        </div>
+        <div class="layout-opt">
+          <div class="lo-preview"><div class="lo-col" style="width:11px"></div><div class="lo-col" style="width:11px"></div><div class="lo-col" style="width:11px"></div><div class="lo-col" style="width:11px"></div></div>
+          <div class="lo-label">4 Columns</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-blue">📐</div>
+        <div class="action-content">
+          <div class="action-label">Planned gadget placement per column</div>
+          <div class="action-text">Here is how the 3 columns will be used after all gadgets are added:</div>
+        </div>
+      </div>
+
+      <div class="col-map">
+        <div class="col-zone">
+          <div class="col-zone-header"><div class="col-num">1</div> Left Column</div>
+          <div class="col-gadget-pill"><div class="cgp-dot" style="background:#1658A8"></div>Issue Statistics (by Reporter)</div>
+          <div class="col-gadget-pill"><div class="cgp-dot" style="background:#534AB7"></div>Issue Statistics (by Status)</div>
+        </div>
+        <div class="col-zone">
+          <div class="col-zone-header"><div class="col-num">2</div> Center Column</div>
+          <div class="col-gadget-pill"><div class="cgp-dot" style="background:#0F6E56"></div>Filter Results (issue list)</div>
+          <div class="col-gadget-pill"><div class="cgp-dot" style="background:#27A06F"></div>Created vs Resolved Chart</div>
+        </div>
+        <div class="col-zone">
+          <div class="col-zone-header"><div class="col-num">3</div> Right Column</div>
+          <div class="col-gadget-pill"><div class="cgp-dot" style="background:#BA7517"></div>Two Dimensional Filter</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="box-icon">ℹ️</span>
+        <div class="box-content">After selecting the layout, click <strong>Save</strong> or <strong>Next</strong>. Your empty dashboard is now created and ready to receive gadgets.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── PHASE 2: FILTER ─── -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Phase 2 — Create the JQL Filter (do this before adding gadgets)</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-filter">4</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-filter">JQL Filter</div>
+        <div class="step-card-title">Create and save your JQL filter — the backbone of this dashboard</div>
+        <div class="step-card-subtitle">All gadgets will use this one saved filter. Get this right first before adding any gadgets.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-purple">🔍</div>
+        <div class="action-content">
+          <div class="action-label">What is a JQL filter?</div>
+          <div class="action-text">JQL (Jira Query Language) is like a search formula. You write a condition — like "show me all SFTS issues raised by our team" — and Jira returns only those matching issues. A <strong>Saved Filter</strong> stores that formula with a name so you can reuse it across gadgets without rewriting it each time.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-purple">🗂</div>
+        <div class="action-content">
+          <div class="action-label">Navigate to: Issues → Manage Filters</div>
+          <div class="action-text">In the top nav, click <strong>"Filters"</strong> → then click <strong>"View all filters"</strong> → then click the <strong>"Create filter"</strong> button on that page. Alternatively go to <strong>Issues → Manage Filters → Create new filter</strong>.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-purple">⌨️</div>
+        <div class="action-content">
+          <div class="action-label">Paste this JQL into the search bar</div>
+          <div class="action-text">In the JQL text area (switch to Advanced mode if needed), paste this query. Replace the member names and group name with your actual values:</div>
+        </div>
+      </div>
+
+      <div class="jql-block">
+        <span class="jql-key">project</span> <span class="jql-op">in</span> (<span class="jql-str">"EMOST"</span>, <span class="jql-str">"ESJD"</span>)<br>
+        <span class="jql-op">AND</span> <span class="jql-key">labels</span> <span class="jql-op">=</span> <span class="jql-str">"SFTS"</span><br>
+        <span class="jql-op">AND</span> <span class="jql-key">reporter</span> <span class="jql-op">in</span> (<span class="jql-str">"john.doe"</span>, <span class="jql-str">"jane.smith"</span>, <span class="jql-str">"ravi.kumar"</span>)<br>
+        <span class="jql-op">AND</span> <span class="jql-key">assignee</span> <span class="jql-op">in</span> <span class="jql-op">membersOf</span>(<span class="jql-str">"emost-esjd-team"</span>)<br>
+        <span class="jql-op">ORDER BY</span> <span class="jql-key">created</span> <span class="jql-op">DESC</span>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-purple">🔎</div>
+        <div class="action-content">
+          <div class="action-label">What each JQL line means</div>
+          <div class="action-text">
+            <strong>project in ("EMOST","ESJD")</strong> — Look inside only these two Jira projects where SFTS issues are raised.<br><br>
+            <strong>labels = "SFTS"</strong> — Only fetch issues that are tagged with the label "SFTS" (this is how you scope only FTP-related stories).<br><br>
+            <strong>reporter in (...)</strong> — Only stories that were <em>created/raised</em> by your team members. Replace with real Jira usernames.<br><br>
+            <strong>assignee in membersOf(...)</strong> — Only stories that are <em>assigned to</em> the other team (EMOST/ESJD members). Replace with their team group name.<br><br>
+            <strong>ORDER BY created DESC</strong> — Show the most recently raised issues at the top.
+          </div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-purple">💾</div>
+        <div class="action-content">
+          <div class="action-label">Save the filter with a clear name</div>
+          <div class="action-text">Click <strong>"Save As"</strong> → In the name field type: <code>SFTS Team Raised Issues</code> → Under <strong>Permissions</strong>, set it to your team group → Click <strong>Save</strong>. You will now see this filter listed in your saved filters — remember the name, you'll need it in the next steps.</div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <span class="box-icon">⚠️</span>
+        <div class="box-content"><strong>Important:</strong> If your SFTS issues don't use the label "SFTS", change <code>labels = "SFTS"</code> to whatever field your team uses — for example <code>component = "FTP"</code> or <code>customfield_10020 = "SFTS"</code>. Ask your Jira admin if unsure.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── PHASE 3: GADGETS ─── -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Phase 3 — Add &amp; Configure Gadgets on your Dashboard</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-gadget">5</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-gadget">Gadgets</div>
+        <div class="step-card-title">Go back to your dashboard and click "Add gadget"</div>
+        <div class="step-card-subtitle">Gadgets are the individual panels/widgets on your dashboard. Each one shows a different view of your SFTS issues.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">🔙</div>
+        <div class="action-content">
+          <div class="action-label">Navigate to your dashboard</div>
+          <div class="action-text">Go to <strong>Dashboards → View all dashboards</strong> → find and click on <strong>"SFTS (FTP) Team Issue Tracker"</strong>. You will see an empty dashboard with 3 column placeholders and an <strong>"Add gadget"</strong> button in the top right.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">➕</div>
+        <div class="action-content">
+          <div class="action-label">What gadgets to add (and why)</div>
+          <div class="action-text">Click <strong>"Add gadget"</strong> and search for each gadget by name. Add all 4 of these — each serves a specific purpose:</div>
+        </div>
+      </div>
+
+      <div class="gadget-grid">
+        <div class="gadget-card recommended">
+          <div class="gadget-top">
+            <div class="gadget-icon gi-blue">📊</div>
+            <div class="gadget-name">Issue Statistics</div>
+          </div>
+          <span class="gadget-tag gt-must">Must add</span>
+          <div class="gadget-desc">Shows a <strong>bar chart of story counts</strong> grouped by Reporter (who raised it) or Status. Add this twice — once for reporter count, once for status count.</div>
+        </div>
+        <div class="gadget-card recommended">
+          <div class="gadget-top">
+            <div class="gadget-icon gi-teal">📋</div>
+            <div class="gadget-name">Filter Results</div>
+          </div>
+          <span class="gadget-tag gt-must">Must add</span>
+          <div class="gadget-desc">Shows a <strong>live scrollable table</strong> of all SFTS issues matching your filter — with columns like Summary, Status, Assignee, Priority.</div>
+        </div>
+        <div class="gadget-card">
+          <div class="gadget-top">
+            <div class="gadget-icon gi-purple">📈</div>
+            <div class="gadget-name">Created vs Resolved</div>
+          </div>
+          <span class="gadget-tag gt-good">Recommended</span>
+          <div class="gadget-desc">Line chart showing <strong>how many SFTS issues are being raised vs resolved</strong> over time. Good for spotting backlogs building up.</div>
+        </div>
+        <div class="gadget-card">
+          <div class="gadget-top">
+            <div class="gadget-icon gi-amber">🔢</div>
+            <div class="gadget-name">Two Dimensional Filter</div>
+          </div>
+          <span class="gadget-tag gt-good">Recommended</span>
+          <div class="gadget-desc">A <strong>matrix table</strong> — rows = team members, columns = issue status. Shows exactly how many issues each person raised at each stage.</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="box-icon">ℹ️</span>
+        <div class="box-content">After each gadget is added to the dashboard, it will show an <strong>error or empty state</strong> until you configure it with your saved filter. That's normal — configuration is done in Steps 6–9 below.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-gadget">6</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-gadget">Configure</div>
+        <div class="step-card-title">Configure "Issue Statistics" gadget — story count by team member</div>
+        <div class="step-card-subtitle">This gadget answers: "How many SFTS issues has each team member raised?"</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">✏️</div>
+        <div class="action-content">
+          <div class="action-label">How to open the gadget settings</div>
+          <div class="action-text">On the Issue Statistics gadget on your dashboard, look for the <strong>pencil icon ✏️ or three-dot menu (⋯)</strong> in the top right corner of that gadget. Click it and select <strong>"Edit"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">Issue Statistics — gadget settings</div>
+        </div>
+        <div class="form-mock">
+          <div class="fm-field">
+            <div class="fm-label">FILTER <span class="required">*</span></div>
+            <input class="fm-input filled" value="SFTS Team Raised Issues" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">STATISTIC TYPE</div>
+            <input class="fm-input typed" value="Reporter" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">SHOW RESOLVED ISSUES</div>
+            <input class="fm-input typed" value="Yes" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">SORT BY</div>
+            <input class="fm-input typed" value="Total (descending)" readonly>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary">✓ &nbsp;Save</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="config-table">
+        <thead><tr><th>Field</th><th>Set this value</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">Filter</td><td><span class="field-value">SFTS Team Raised Issues</span></td><td class="field-why">The saved JQL filter from Step 4 — this scopes the gadget to only your SFTS issues</td></tr>
+          <tr><td class="field-name">Statistic Type</td><td><span class="field-value">Reporter</span></td><td class="field-why">Groups the bar chart by who raised each issue — so you see per-member counts</td></tr>
+          <tr><td class="field-name">Show Resolved</td><td><span class="field-value">Yes</span></td><td class="field-why">Includes issues that are already done — gives a complete picture, not just open ones</td></tr>
+          <tr><td class="field-name">Sort By</td><td><span class="field-value">Total descending</span></td><td class="field-why">The team member who raised the most issues appears at the top</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip-box">
+        <span class="box-icon">💡</span>
+        <div class="box-content"><strong>Pro tip:</strong> Add a second "Issue Statistics" gadget in the same column, but this time set Statistic Type to <strong>"Status"</strong>. This shows a separate chart for Open / In Progress / Done counts — two charts, one column.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-gadget">7</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-gadget">Configure</div>
+        <div class="step-card-title">Configure "Filter Results" gadget — live issue list</div>
+        <div class="step-card-subtitle">This gadget answers: "What are the actual SFTS issues raised by our team — show me the list."</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">✏️</div>
+        <div class="action-content">
+          <div class="action-label">Click edit on the Filter Results gadget</div>
+          <div class="action-text">Click the <strong>pencil/edit icon</strong> on the Filter Results gadget. Configure it as shown below. The <strong>Columns</strong> field is important — it controls what information is visible in the issue list table.</div>
+        </div>
+      </div>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">Filter Results — gadget settings</div>
+        </div>
+        <div class="form-mock">
+          <div class="fm-field">
+            <div class="fm-label">SAVED FILTER <span class="required">*</span></div>
+            <input class="fm-input filled" value="SFTS Team Raised Issues" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">COLUMNS TO DISPLAY</div>
+            <input class="fm-input typed" value="Summary, Status, Reporter, Assignee, Priority, Created, Updated" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">NUMBER OF RESULTS PER PAGE</div>
+            <input class="fm-input typed" value="25" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">REFRESH INTERVAL</div>
+            <input class="fm-input typed" value="15 minutes" readonly>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary">✓ &nbsp;Save</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="config-table">
+        <thead><tr><th>Field</th><th>Set this value</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">Saved Filter</td><td><span class="field-value">SFTS Team Raised Issues</span></td><td class="field-why">Pulls only the SFTS issues your team raised — not all Jira issues</td></tr>
+          <tr><td class="field-name">Columns</td><td><span class="field-value">Summary, Status, Reporter, Assignee, Priority, Created</span></td><td class="field-why">Summary = what the issue is about. Reporter = who raised it. Assignee = who from other team owns it.</td></tr>
+          <tr><td class="field-name">Results per page</td><td><span class="field-value">25</span></td><td class="field-why">Shows 25 issues at once — enough for most teams without overwhelming the view</td></tr>
+          <tr><td class="field-name">Refresh interval</td><td><span class="field-value">15 minutes</span></td><td class="field-why">Auto-refreshes every 15 min so the list stays up to date without manual refresh</td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-gadget">8</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-gadget">Configure</div>
+        <div class="step-card-title">Configure "Two Dimensional Filter Statistics" gadget — matrix view</div>
+        <div class="step-card-subtitle">This gadget answers: "For each team member, how many issues are Open, In Progress, and Done?"</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">📊</div>
+        <div class="action-content">
+          <div class="action-label">What this gadget produces</div>
+          <div class="action-text">This creates a <strong>matrix/grid table</strong> where each row is a team member (Reporter) and each column is a Jira status (Open, In Progress, Done, Closed). The cells show the count. Example output:</div>
+        </div>
+      </div>
+
+      <!-- Matrix preview -->
+      <div style="overflow-x:auto; border-radius:var(--radius-md); border:1px solid var(--border);">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead style="background:var(--gray-100);">
+            <tr>
+              <th style="padding:10px 14px; text-align:left; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Reporter</th>
+              <th style="padding:10px 14px; text-align:center; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Open</th>
+              <th style="padding:10px 14px; text-align:center; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">In Progress</th>
+              <th style="padding:10px 14px; text-align:center; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Done</th>
+              <th style="padding:10px 14px; text-align:center; font-weight:600; color:var(--blue-dark); border-bottom:1px solid var(--border); background:var(--blue-light);">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px; font-weight:500; border-bottom:1px solid var(--gray-100);">john.doe</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">3</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">2</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">5</td>
+              <td style="padding:10px 14px; text-align:center; font-weight:600; color:var(--blue-dark); background:var(--blue-light); border-bottom:1px solid var(--gray-100);">10</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px; font-weight:500; border-bottom:1px solid var(--gray-100);">jane.smith</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">1</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">4</td>
+              <td style="padding:10px 14px; text-align:center; border-bottom:1px solid var(--gray-100);">7</td>
+              <td style="padding:10px 14px; text-align:center; font-weight:600; color:var(--blue-dark); background:var(--blue-light); border-bottom:1px solid var(--gray-100);">12</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px; font-weight:500;">ravi.kumar</td>
+              <td style="padding:10px 14px; text-align:center;">5</td>
+              <td style="padding:10px 14px; text-align:center;">1</td>
+              <td style="padding:10px 14px; text-align:center;">3</td>
+              <td style="padding:10px 14px; text-align:center; font-weight:600; color:var(--blue-dark); background:var(--blue-light);">9</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mockup" style="margin-top:12px;">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">Two Dimensional Filter Statistics — gadget settings</div>
+        </div>
+        <div class="form-mock">
+          <div class="fm-field">
+            <div class="fm-label">FILTER <span class="required">*</span></div>
+            <input class="fm-input filled" value="SFTS Team Raised Issues" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">X AXIS — ROWS (who)</div>
+            <input class="fm-input typed" value="Reporter" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">Y AXIS — COLUMNS (what stage)</div>
+            <input class="fm-input typed" value="Status" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">SHOW TOTALS</div>
+            <input class="fm-input typed" value="Yes" readonly>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary">✓ &nbsp;Save</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="config-table">
+        <thead><tr><th>Field</th><th>Set this value</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">Filter</td><td><span class="field-value">SFTS Team Raised Issues</span></td><td class="field-why">Same filter — scoped to only your team's SFTS issues</td></tr>
+          <tr><td class="field-name">X Axis (Rows)</td><td><span class="field-value">Reporter</span></td><td class="field-why">Each row = one team member. You see all members listed vertically.</td></tr>
+          <tr><td class="field-name">Y Axis (Columns)</td><td><span class="field-value">Status</span></td><td class="field-why">Each column = one Jira status. You see Open / In Progress / Done side by side.</td></tr>
+          <tr><td class="field-name">Show Totals</td><td><span class="field-value">Yes</span></td><td class="field-why">Adds a Total column per row — total stories raised per person at a glance</td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-gadget">9</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-gadget">Configure</div>
+        <div class="step-card-title">Configure "Created vs Resolved" gadget — trend over time</div>
+        <div class="step-card-subtitle">This gadget answers: "Are SFTS issues being resolved as fast as they are being raised?"</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-teal">📈</div>
+        <div class="action-content">
+          <div class="action-label">What this chart shows</div>
+          <div class="action-text">A line chart with <strong>two lines</strong>: one showing how many SFTS issues were <strong>created</strong> per week, and one showing how many were <strong>resolved</strong>. If the created line is above the resolved line for many weeks — your backlog is growing and you need attention.</div>
+        </div>
+      </div>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <div class="mockup-dots"><div class="mockup-dot dot-r"></div><div class="mockup-dot dot-y"></div><div class="mockup-dot dot-g"></div></div>
+          <div class="mockup-url">Created vs Resolved — gadget settings</div>
+        </div>
+        <div class="form-mock">
+          <div class="fm-field">
+            <div class="fm-label">PROJECT</div>
+            <input class="fm-input typed" value="EMOST, ESJD (select both)" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">PERIOD</div>
+            <input class="fm-input typed" value="Weekly" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">NUMBER OF DAYS</div>
+            <input class="fm-input typed" value="60" readonly>
+          </div>
+          <div class="fm-field">
+            <div class="fm-label">CUMULATIVE</div>
+            <input class="fm-input typed" value="No (show per-week bars)" readonly>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary">✓ &nbsp;Save</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="box-icon">ℹ️</span>
+        <div class="box-content">Note: The "Created vs Resolved" gadget uses <strong>project selection</strong>, not a JQL filter directly. Select both <strong>EMOST</strong> and <strong>ESJD</strong> as the projects. Then set Period to <strong>Weekly</strong> and Days to <strong>60</strong> to see the last 2 months of trend data.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── PHASE 4: FINAL ─── -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Phase 4 — Final Steps</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num-wrap">
+        <div class="step-num phase-done">10</div>
+      </div>
+      <div class="step-card-title-area">
+        <div class="step-phase-tag tag-complete">Complete</div>
+        <div class="step-card-title">Favourite the dashboard and share with your team</div>
+        <div class="step-card-subtitle">Two final actions to make sure this dashboard is easy to find and accessible to everyone.</div>
+      </div>
+    </div>
+    <div class="step-card-body">
+
+      <div class="action">
+        <div class="action-icon-wrap ai-gray">⭐</div>
+        <div class="action-content">
+          <div class="action-label">Mark as favourite</div>
+          <div class="action-text">On your dashboard page, click the <strong>star icon ⭐</strong> next to the dashboard name at the top. This pins it to the top of your <strong>Dashboards</strong> menu so you can open it in one click every time — no searching needed.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-gray">🔗</div>
+        <div class="action-content">
+          <div class="action-label">Share the link with your team</div>
+          <div class="action-text">Copy the URL from your browser while on the dashboard page and share it in your team's chat (Slack, Teams, etc.). Since you set <strong>"Shared with"</strong> to your team group in Step 2, they will be able to open it directly without any additional setup.</div>
+        </div>
+      </div>
+
+      <div class="action">
+        <div class="action-icon-wrap ai-gray">🔄</div>
+        <div class="action-content">
+          <div class="action-label">Auto-refresh is already on</div>
+          <div class="action-text">Each gadget on the dashboard <strong>automatically refreshes</strong> based on live Jira data. You don't need to manually update anything — whenever a new SFTS issue is raised or a status changes, the dashboard reflects it within the configured refresh interval (usually 15 minutes).</div>
+        </div>
+      </div>
+
+      <div class="success-box">
+        <span class="box-icon">✅</span>
+        <div class="box-content"><strong>You're done!</strong> Your SFTS Team Issue Tracker dashboard is fully set up. It now shows story counts by member, a live issue list, a matrix of who-raised-what, and a trend chart — all filtered to only your team's SFTS issues assigned to EMOST and ESJD.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Final Summary Card -->
+  <div class="final-card">
+    <div class="final-icon">🎯</div>
+    <h2>Your dashboard is ready!</h2>
+    <p>Here's a quick summary of what you've built and what each part tells you.</p>
+    <div class="final-checklist">
+      <div class="final-check"><span class="check-icon">📊</span> <strong>Issue Statistics (Reporter)</strong> — Total SFTS stories raised per team member</div>
+      <div class="final-check"><span class="check-icon">📊</span> <strong>Issue Statistics (Status)</strong> — How many stories are Open / In Progress / Done</div>
+      <div class="final-check"><span class="check-icon">📋</span> <strong>Filter Results</strong> — Live table of every SFTS issue your team has raised</div>
+      <div class="final-check"><span class="check-icon">🔢</span> <strong>Two Dimensional Filter</strong> — Matrix: each person × each status = story count</div>
+      <div class="final-check"><span class="check-icon">📈</span> <strong>Created vs Resolved</strong> — Weekly trend to spot if backlog is growing</div>
+    </div>
+  </div>
+
+</div><!-- /page-body -->
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <strong>SFTS Team Issue Tracker — Jira Dashboard Guide</strong> &nbsp;·&nbsp; Created for EMOST &amp; ESJD tracking &nbsp;·&nbsp; Keep your JQL filter updated when team members change.
+</div>
+
+</body>
+</html>
