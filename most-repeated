@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCS-225 – Most Repeated Questions & Answers</title>
+<style>
+  :root {
+    --bg:#0f1117;--surface:#1a1d27;--card:#21263a;--border:#2e3451;
+    --accent:#4f8ef7;--accent2:#f7c948;--accent3:#38d9a9;--accent4:#f06595;
+    --text:#e8eaf6;--muted:#8892b0;--green:#38d9a9;--yellow:#f7c948;
+    --blue:#4f8ef7;--purple:#a78bfa;--red:#f06595;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.75;}
+  .hero{background:linear-gradient(135deg,#0d1535,#1a1d27);border-bottom:3px solid var(--accent2);padding:30px 38px 22px;position:sticky;top:0;z-index:100;}
+  .hero h1{font-size:1.7rem;color:var(--accent2);font-weight:800;}
+  .hero p{color:var(--muted);font-size:0.87rem;margin-top:4px;}
+  .badge-row{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;}
+  .badge{background:var(--card);border:1px solid var(--border);padding:3px 12px;border-radius:20px;font-size:0.75rem;color:var(--accent3);font-weight:600;}
+  .sidenav{position:fixed;left:0;top:0;bottom:0;width:210px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:14px 0;z-index:200;}
+  .sidenav h3{padding:0 13px 9px;color:var(--muted);font-size:0.67rem;text-transform:uppercase;letter-spacing:1px;}
+  .sidenav a{display:block;padding:7px 13px;color:var(--text);text-decoration:none;font-size:0.79rem;border-left:3px solid transparent;}
+  .sidenav a:hover,.sidenav a.active{background:var(--card);border-left-color:var(--accent2);color:var(--accent2);}
+  .main{margin-left:210px;padding:22px 34px;max-width:970px;}
+  .section-header{background:linear-gradient(90deg,#1b2040,var(--surface));border-left:5px solid var(--accent2);border-radius:8px;padding:17px 21px;margin:34px 0 16px;}
+  .section-header .pt{font-size:0.71rem;color:var(--accent2);text-transform:uppercase;letter-spacing:2px;font-weight:700;}
+  .section-header h2{font-size:1.25rem;color:#fff;margin-top:3px;}
+  .section-header .meta{font-size:0.79rem;color:var(--muted);margin-top:3px;}
+  .qb{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;overflow:hidden;}
+  .qh{background:rgba(79,142,247,0.09);padding:11px 17px;display:flex;gap:11px;align-items:flex-start;}
+  .qn{background:var(--accent);color:#fff;border-radius:50%;min-width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;}
+  .qt{color:var(--accent);font-weight:700;font-size:0.88rem;line-height:1.5;}
+  .qm{margin-left:auto;background:#1b2a4a;color:var(--accent2);padding:2px 9px;border-radius:11px;font-size:0.71rem;font-weight:700;white-space:nowrap;align-self:center;}
+  .qa{padding:15px 17px;font-size:0.89rem;line-height:1.8;}
+  .kt{color:var(--yellow);font-weight:700;}
+  table{width:100%;border-collapse:collapse;margin:11px 0;font-size:0.85rem;}
+  th{background:rgba(79,142,247,0.14);color:var(--accent);padding:8px 12px;text-align:left;border-bottom:2px solid var(--accent);}
+  td{padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .formula{background:#0a1128;border:1px solid var(--blue);border-radius:5px;padding:10px 15px;margin:9px 0;font-family:'Courier New',monospace;font-size:0.88rem;color:var(--accent2);}
+  .tip{background:rgba(56,217,169,0.07);border-left:4px solid var(--green);padding:10px 14px;margin:9px 0;border-radius:4px;font-size:0.86rem;}
+  .warn{background:rgba(247,201,72,0.07);border-left:4px solid var(--yellow);padding:10px 14px;margin:9px 0;border-radius:4px;font-size:0.86rem;}
+  ul.list{padding-left:18px;}ul.list li{margin-bottom:5px;}
+  .acc-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:9px 0;}
+  .acc-table th{background:#1b2a4a;color:var(--accent);padding:7px;text-align:center;border:1px solid var(--border);}
+  .acc-table td{padding:5px 9px;border:1px solid var(--border);}
+  .acc-table .tr td{font-weight:700;background:rgba(79,142,247,0.07);border-top:2px solid var(--accent);}
+  .freq-badge{display:inline-block;background:#1b2a4a;color:var(--accent2);border:1px solid var(--accent2);padding:2px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;margin-left:8px;}
+  html{scroll-behavior:smooth;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  @media(max-width:768px){.sidenav{display:none;}.main{margin-left:0;padding:13px;}.hero{padding:16px;position:static;}}
+</style>
+</head>
+<body>
+
+<nav class="sidenav">
+  <h3>🔁 Topics</h3>
+  <a href="#concepts">1. Accounting Concepts</a>
+  <a href="#cashflow">2. Cash Flow Statement</a>
+  <a href="#wc">3. Working Capital</a>
+  <a href="#capbudget">4. Capital Budgeting</a>
+  <a href="#ratios">5. Ratio Analysis</a>
+  <a href="#inventory">6. Inventory Management</a>
+  <a href="#finmgmt">7. Financial Management</a>
+  <a href="#costcap">8. Cost of Capital</a>
+  <a href="#fsa">9. Financial Statement Analysis</a>
+  <a href="#funds">10. Funds Flow Statement</a>
+  <a href="#cash">11. Cash Management</a>
+  <a href="#annrep">12. Annual Report</a>
+</nav>
+
+<div class="hero">
+  <h1>MCS-225 · Most Repeated Questions – Master Answers</h1>
+  <p>12 high-frequency topics · Same answers as PYQ file · Read these = Pass guaranteed</p>
+  <div class="badge-row">
+    <span class="badge">Appears in 4–8 Papers</span>
+    <span class="badge">Same Style as PYQ File</span>
+    <span class="badge">Exam Ready</span>
+    <span class="badge">No Fluff</span>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== 1. ACCOUNTING CONCEPTS ===== -->
+<div id="concepts" class="section-header">
+  <div class="pt">Topic 1 · Appeared in ALL 8 Papers</div>
+  <h2>Accounting Concepts</h2>
+  <div class="meta">Every paper asks 4 concepts × 5 marks = 20 marks. Know ALL 10 concepts.</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">Explain any four accounting concepts (Business Entity / Money Measurement / Cost / Accrual / Matching / Going Concern / Conservatism / Materiality / Dual Aspect / Consistency / Accounting Period)</div><div class="qm">4×5=20</div></div>
+  <div class="qa">
+    <strong>(1) Business Entity Concept:</strong><br>
+    The <span class="kt">business and its owner are two separate entities</span>. All transactions recorded from the business's viewpoint, not the owner's.<br>
+    Example: Owner withdraws ₹10,000 for personal use → Drawings A/c debited (reduces Capital). NOT recorded as a business expense.<br><br>
+
+    <strong>(2) Money Measurement Concept:</strong><br>
+    Only transactions that can be <span class="kt">expressed in monetary terms</span> are recorded. Non-monetary events (employee morale, brand loyalty, management quality) are excluded.<br>
+    Limitation: Ignores qualitative factors; ignores inflation (assumes stable monetary unit).<br><br>
+
+    <strong>(3) Cost Concept:</strong><br>
+    Assets are recorded at their <span class="kt">historical acquisition cost</span>, not at current market value. Ensures objectivity and verifiability.<br>
+    Example: Land bought for ₹5,00,000 in 2010 → still shown at ₹5,00,000 in books even if market value is ₹50,00,000 today.<br><br>
+
+    <strong>(4) Accrual Concept:</strong><br>
+    Revenue recognised when <span class="kt">earned</span>; expenses when <span class="kt">incurred</span> — regardless of when cash is received or paid.<br>
+    Example: March salary ₹10,000 unpaid → still debit P&L for March; shown as Outstanding Salary (current liability) in Balance Sheet. Rent received in advance → not yet income.<br><br>
+
+    <strong>(5) Matching Concept:</strong><br>
+    Revenues and expenses of the <span class="kt">same accounting period must be matched</span>. Only cost of goods SOLD (not produced) is charged against sales.<br>
+    Example: 100 units produced, 80 sold → only cost of 80 units charged to P&L. Cost of remaining 20 units = Closing Stock (asset).<br><br>
+
+    <strong>(6) Going Concern Concept:</strong><br>
+    Business is assumed to continue <span class="kt">indefinitely</span>. Assets valued at cost (not liquidation value). This justifies spreading cost of fixed assets over their useful life (depreciation).<br>
+    Example: Machine costing ₹1,00,000 with 10-year life → depreciated ₹10,000/year rather than written off fully in Year 1.<br><br>
+
+    <strong>(7) Conservatism (Prudence) Concept:</strong><br>
+    <span class="kt">"Anticipate no profit; provide for all possible losses."</span><br>
+    Example: Value closing stock at lower of cost or market price. Create provision for doubtful debts even before debts become bad.<br>
+    Limitation: Over-conservatism leads to understated profits → distorted financial view.<br><br>
+
+    <strong>(8) Materiality Concept:</strong><br>
+    Events of <span class="kt">relatively small importance</span> need not receive theoretically correct treatment.<br>
+    Example: A ₹50 pencil → directly expensed rather than capitalised and depreciated. A ₹5 discount need not be recorded separately.<br><br>
+
+    <strong>(9) Dual Aspect Concept:</strong><br>
+    Every transaction has <span class="kt">two aspects — a debit and a credit</span>. Foundation of Double Entry System (Luca Pacioli, 15th century Italy).
+    <div class="formula">Assets = Liabilities + Capital
+Every transaction affects at least TWO accounts in opposite directions</div>
+    Examples: Buy goods for cash → Stock ↑ (Dr), Cash ↓ (Cr) | Borrow from bank → Cash ↑ (Dr), Loan ↑ (Cr)<br><br>
+
+    <strong>(10) Consistency Concept:</strong><br>
+    Same accounting methods must be used <span class="kt">period to period</span>. No arbitrary changes allowed. Enables meaningful comparison across years.<br>
+    Example: If FIFO used for inventory in Year 1 → must use FIFO in Year 2 also. Change allowed only with valid reason + disclosure of effect.<br><br>
+
+    <strong>(11) Accounting Period Concept:</strong><br>
+    Life of business divided into defined <span class="kt">time periods (usually 1 year)</span>. Financial statements prepared for each period. Enables timely information for stakeholders.<br>
+    External reporting: Annual (mandatory). Internal: Monthly/Quarterly (management control).
+  </div>
+</div>
+
+<!-- ===== 2. CASH FLOW STATEMENT ===== -->
+<div id="cashflow" class="section-header">
+  <div class="pt">Topic 2 · Appeared in 6 of 8 Papers</div>
+  <h2>Cash Flow Statement</h2>
+  <div class="meta">AS-3 / IND AS-7 · Three activities · Direct Method format · High marks topic</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is a Cash Flow Statement? Explain the three broad headings / major classification of cash flows as per AS-3. How is it prepared under Direct Method?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Definition:</strong> Cash Flow Statement shows <span class="kt">sources and uses of cash and cash equivalents</span> during an accounting period. Governed by AS-3 (Revised) / IND AS-7.<br>
+    Unlike P&L (accrual-based), Cash Flow Statement is <span class="kt">purely cash-based</span>.<br><br>
+
+    <strong>Purpose:</strong>
+    <ul class="list">
+      <li>Shows actual cash generated and used (explains why profitable firms face cash crunch)</li>
+      <li>Assesses liquidity and short-term solvency of the firm</li>
+      <li>Helps plan future cash requirements and dividend decisions</li>
+      <li>Required for loan applications and bond issuance</li>
+    </ul>
+
+    <strong>Three Major Classifications (AS-3):</strong>
+    <table>
+      <tr><th>Activity</th><th>What it Covers</th><th>Inflows</th><th>Outflows</th></tr>
+      <tr><td><strong>1. Operating Activities</strong></td><td>Principal revenue-generating activities of the business</td><td>Cash from customers; interest/dividends received</td><td>Cash to suppliers; wages; overheads; taxes paid</td></tr>
+      <tr><td><strong>2. Investing Activities</strong></td><td>Acquisition and disposal of long-term assets and investments</td><td>Sale of fixed assets; sale of investments; loans repaid by others</td><td>Purchase of fixed assets; purchase of investments; loans given</td></tr>
+      <tr><td><strong>3. Financing Activities</strong></td><td>Changes in equity capital and borrowings</td><td>Issue of shares/debentures; loans raised</td><td>Repayment of loans; dividends paid; interest paid; share buyback</td></tr>
+    </table>
+
+    <strong>Format – Direct Method (Operating Activities):</strong>
+    <table class="acc-table">
+      <tr><th>Particulars</th><th>₹</th></tr>
+      <tr><td><strong>A. Cash from Operating Activities (Direct Method)</strong></td><td></td></tr>
+      <tr><td>Cash received from customers = Sales − Increase in Debtors (or + Decrease in Debtors)</td><td>XX</td></tr>
+      <tr><td>Less: Cash paid to suppliers = Purchases + Increase in Stock − Increase in Creditors</td><td>(XX)</td></tr>
+      <tr><td>Less: Cash paid for operating expenses (Wages, Salaries, Rent, etc.)</td><td>(XX)</td></tr>
+      <tr><td>Less: Income Tax Paid</td><td>(XX)</td></tr>
+      <tr><td class="tr">Net Cash from Operating Activities (A)</td><td class="tr">XX</td></tr>
+      <tr><td><strong>B. Cash from Investing Activities</strong></td><td>XX</td></tr>
+      <tr><td><strong>C. Cash from Financing Activities</strong></td><td>XX</td></tr>
+      <tr><td class="tr">Net Increase / Decrease in Cash (A+B+C)</td><td class="tr">XX</td></tr>
+      <tr><td>Add: Opening Cash and Cash Equivalents</td><td>XX</td></tr>
+      <tr><td class="tr">Closing Cash and Cash Equivalents</td><td class="tr">XX</td></tr>
+    </table>
+
+    <div class="tip"><strong>Direct Method vs Indirect Method:</strong> Direct Method lists actual cash receipts and payments. Indirect Method starts from Net Profit and adjusts for non-cash items and working capital changes. IND AS-7 prefers Direct Method as it shows more useful information about future cash flow potential.</div>
+
+    <strong>Key difference from Funds Flow Statement:</strong> Cash Flow uses only CASH basis. Funds Flow uses Working Capital (broader) basis.
+  </div>
+</div>
+
+<!-- ===== 3. WORKING CAPITAL ===== -->
+<div id="wc" class="section-header">
+  <div class="pt">Topic 3 · Appeared in 6 of 8 Papers</div>
+  <h2>Working Capital & Operating Cycle</h2>
+  <div class="meta">Definition · Operating Cycle · Factors · Sources · Strategies</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is Working Capital? Explain the Operating Cycle concept. Discuss factors influencing working capital requirements. What are the sources of working capital?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Definition of Working Capital:</strong>
+    <div class="formula">Gross Working Capital = Total Current Assets
+Net Working Capital  = Current Assets − Current Liabilities</div>
+    Positive NWC → firm can meet short-term obligations + has operational cushion.<br>
+    Negative NWC → dangerously illiquid — cannot meet current debts.<br><br>
+
+    <strong>Operating Cycle Concept:</strong><br>
+    The operating cycle is the time taken for <span class="kt">cash to convert back into cash</span> through the production and sales process. Longer operating cycle = more working capital required.
+
+    <div class="formula">Gross Operating Cycle = RMCP + WIPCP + FGCP + BDCP
+Net Operating Cycle  = Gross OC − PDP
+
+RMCP = Raw Material Conversion Period (days stock of RM held)
+WIPCP = Work-in-Progress Conversion Period (days in production)
+FGCP = Finished Goods Conversion Period (days stock of FG held)
+BDCP = Book Debts Collection Period (debtor days)
+PDP  = Payment Deferral Period (creditor days = free finance from suppliers)</div>
+
+    <strong>Example:</strong> RMCP=20 days + WIPCP=15 days + FGCP=10 days + BDCP=30 days − PDP=25 days = <span class="kt">Net OC = 50 days</span><br><br>
+
+    <strong>Factors Influencing Working Capital Requirements:</strong>
+    <table>
+      <tr><th>Factor</th><th>Impact on WC</th></tr>
+      <tr><td>Nature of Business</td><td>Manufacturing needs more WC; service/utility firms need less</td></tr>
+      <tr><td>Business Cycle</td><td>Boom → high production → high WC; Recession → slow sales → stock piles up → high WC</td></tr>
+      <tr><td>Seasonal Variations</td><td>Seasonal businesses need high WC during peak season</td></tr>
+      <tr><td>Size of Business</td><td>Larger firms need more WC for operations</td></tr>
+      <tr><td>Length of Production Cycle</td><td>Longer cycle → more WIP → more WC needed</td></tr>
+      <tr><td>Credit Policy</td><td>Liberal credit to customers → large debtors → more WC blocked</td></tr>
+      <tr><td>Technology</td><td>Better technology → less inventory needed → less WC</td></tr>
+    </table>
+
+    <strong>Sources of Working Capital Finance:</strong>
+    <table>
+      <tr><th>Source</th><th>Type</th><th>Example</th></tr>
+      <tr><td>Trade Credit</td><td>Spontaneous / Free</td><td>Suppliers give 30-60 days credit; most popular source</td></tr>
+      <tr><td>Bank Overdraft / Cash Credit</td><td>Short-term negotiated</td><td>Withdraw more than balance; pay interest only on amount used</td></tr>
+      <tr><td>Commercial Paper</td><td>Short-term market instrument</td><td>Unsecured promissory note issued by large companies</td></tr>
+      <tr><td>Bills Discounting / Factoring</td><td>Receivables-based</td><td>Sell debtors to bank/factor for immediate cash</td></tr>
+      <tr><td>Retained Profits / Long-term Funds</td><td>Permanent WC financing</td><td>Core minimum WC funded by long-term sources</td></tr>
+    </table>
+
+    <strong>Three WC Strategies:</strong>
+    <table>
+      <tr><th>Strategy</th><th>CA Level</th><th>Financing</th><th>Risk-Return</th></tr>
+      <tr><td>Conservative</td><td>High</td><td>Long-term funds</td><td>Low risk, Low return</td></tr>
+      <tr><td>Aggressive</td><td>Low</td><td>Short-term funds</td><td>High risk, High return</td></tr>
+      <tr><td>Moderate (Matching)</td><td>Balanced</td><td>Match asset maturity with fund maturity</td><td>Balanced</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 4. CAPITAL BUDGETING ===== -->
+<div id="capbudget" class="section-header">
+  <div class="pt">Topic 4 · Appeared in 5 of 8 Papers</div>
+  <h2>Capital Budgeting</h2>
+  <div class="meta">Types of decisions · Stages · Methods (Payback/ARR/NPV/IRR) · Importance</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is Capital Investment? Explain the different types of investment decisions, stages in capital budgeting process, discuss the major techniques and their drawbacks, and the importance of capital investment decisions.</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Capital Investment:</strong> Investment of funds in <span class="kt">long-term assets</span> whose benefits are expected over several years. Involves large sums, long commitment, and mostly irreversible decisions.<br><br>
+
+    <strong>Types of Investment Decisions:</strong>
+    <table>
+      <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+      <tr><td>Accept/Reject</td><td>Evaluate a single project independently</td><td>Should we buy new machinery worth ₹50 lakhs?</td></tr>
+      <tr><td>Mutually Exclusive</td><td>Choose ONE from competing alternatives</td><td>Machine A vs Machine B — can only buy one</td></tr>
+      <tr><td>Capital Rationing</td><td>Select best portfolio when budget is limited</td><td>Choose 3 from 7 projects within ₹1 crore</td></tr>
+      <tr><td>Replacement</td><td>Replace old asset with new one?</td><td>Replace 10-year-old equipment</td></tr>
+      <tr><td>Expansion</td><td>Add new capacity for existing product</td><td>Add a new production line</td></tr>
+      <tr><td>Diversification</td><td>Enter new product/market</td><td>FMCG company entering pharma</td></tr>
+    </table>
+
+    <strong>Stages in Capital Budgeting Process:</strong>
+    <ul class="list">
+      <li><strong>Stage 1 – Identification:</strong> Identify investment opportunities (internal proposals, market analysis, R&D output)</li>
+      <li><strong>Stage 2 – Screening:</strong> Initial filter based on strategic fit and basic feasibility</li>
+      <li><strong>Stage 3 – Evaluation:</strong> Estimate cash flows → Apply methods (NPV, IRR, Payback, ARR, PI)</li>
+      <li><strong>Stage 4 – Authorisation:</strong> Management/Board approval based on evaluation results</li>
+      <li><strong>Stage 5 – Implementation:</strong> Execute the project, procure assets, deploy funds</li>
+      <li><strong>Stage 6 – Post-completion Audit:</strong> Compare actual vs projected cash flows; learn for future decisions</li>
+    </ul>
+
+    <strong>Major Capital Budgeting Techniques:</strong>
+    <table>
+      <tr><th>Method</th><th>Formula / Rule</th><th>Accept if</th><th>Major Drawbacks</th></tr>
+      <tr><td><strong>Payback Period</strong></td><td>Initial Investment / Annual Cash Flow</td><td>PBP &lt; target period</td><td>Ignores TVM; ignores cash flows beyond payback; biased against long-term projects</td></tr>
+      <tr><td><strong>ARR (Accounting Rate of Return)</strong></td><td>(Avg Annual Profit / Avg Investment) × 100</td><td>ARR &gt; target rate</td><td>Ignores TVM; uses accounting profit not cash flows; affected by depreciation method</td></tr>
+      <tr><td><strong>NPV</strong></td><td>Σ[CFt/(1+k)t] − C₀</td><td>NPV &gt; 0</td><td>Difficult to determine correct discount rate; favours larger projects (absolute ₹)</td></tr>
+      <tr><td><strong>IRR</strong></td><td>Rate at which NPV = 0</td><td>IRR &gt; Cost of Capital</td><td>Multiple IRRs possible; reinvestment at IRR is unrealistic; complex to calculate</td></tr>
+    </table>
+
+    <div class="formula">Cash Inflow = EBT − Tax + Depreciation
+                = (Revenue − Cash Expenses − Depreciation)(1−t) + Depreciation</div>
+
+    <strong>Importance of Capital Investment Decisions:</strong>
+    <ul class="list">
+      <li>Large sums involved → irreversible → high impact on future profitability</li>
+      <li>Long-term commitment (5–20 years) → shapes firm's competitive position</li>
+      <li>Determines the firm's operating risk and cost structure</li>
+      <li>Signals firm's strategic intent (expansion, diversification) to the market</li>
+      <li>Errors are very costly and extremely difficult to reverse</li>
+    </ul>
+
+    <div class="tip">When NPV and IRR conflict → ALWAYS prefer NPV as it measures absolute increase in shareholder wealth.</div>
+  </div>
+</div>
+
+<!-- ===== 5. RATIO ANALYSIS ===== -->
+<div id="ratios" class="section-header">
+  <div class="pt">Topic 5 · Appeared in 5 of 8 Papers</div>
+  <h2>Ratio Analysis</h2>
+  <div class="meta">Liquidity · Solvency · Profitability · Activity ratios · All formulas</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What are the different types of financial ratios? Explain Liquidity, Solvency, and Profitability ratios with formulas. How are ratios used as a diagnostic tool?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Ratios as Diagnostic Tool:</strong><br>
+    Like a doctor uses medical tests to diagnose disease, a financial analyst uses ratios to <span class="kt">diagnose the financial health</span> of a firm. Ratios convert raw numbers into meaningful relationships.<br><br>
+
+    <strong>CATEGORY 1 — Liquidity Ratios</strong> (Short-term solvency)
+    <table>
+      <tr><th>Ratio</th><th>Formula</th><th>Ideal</th><th>Meaning</th></tr>
+      <tr><td>Current Ratio</td><td>Current Assets / Current Liabilities</td><td>2:1</td><td>Can meet short-term debts twice over</td></tr>
+      <tr><td>Quick / Acid Test Ratio</td><td>(CA − Stock − Prepaid) / CL</td><td>1:1</td><td>Meet debts without selling stock</td></tr>
+      <tr><td>Absolute Liquidity Ratio</td><td>(Cash + Marketable Securities) / CL</td><td>0.5:1</td><td>Immediate cash position</td></tr>
+    </table>
+    Note: Quick Assets = CA − Inventory − Prepaid Expenses<br><br>
+
+    <strong>CATEGORY 2 — Solvency Ratios</strong> (Long-term financial stability)
+    <table>
+      <tr><th>Ratio</th><th>Formula</th><th>Ideal</th><th>Meaning</th></tr>
+      <tr><td>Debt-Equity Ratio</td><td>Long-term Debt / Shareholders' Funds</td><td>≤ 1:1</td><td>Higher = more financial risk (highly geared)</td></tr>
+      <tr><td>Proprietary Ratio</td><td>Proprietors' Funds / Total Assets</td><td>Higher = stable</td><td>Proportion of assets funded by owners</td></tr>
+      <tr><td>Interest Cover Ratio</td><td>EBIT / Interest Charges</td><td>≥ 3x</td><td>Ability to pay interest from profits</td></tr>
+      <tr><td>Fixed Assets to Net Worth</td><td>Fixed Assets / Shareholders' Funds</td><td>&lt; 1</td><td>How much of owner's funds tied in fixed assets</td></tr>
+    </table>
+
+    <strong>CATEGORY 3 — Profitability Ratios</strong>
+    <table>
+      <tr><th>Ratio</th><th>Formula</th><th>Meaning</th></tr>
+      <tr><td>Gross Profit Ratio</td><td>(Gross Profit / Net Sales) × 100</td><td>Profit after production cost</td></tr>
+      <tr><td>Net Profit Ratio</td><td>(Net Profit / Net Sales) × 100</td><td>Overall profitability after all costs</td></tr>
+      <tr><td>Operating Profit Ratio</td><td>(Operating Profit / Net Sales) × 100</td><td>Core business profitability</td></tr>
+      <tr><td>ROCE</td><td>(EBIT / Capital Employed) × 100</td><td>Return on total capital invested</td></tr>
+      <tr><td>Return on Equity (ROE)</td><td>(Net Profit / Shareholders' Equity) × 100</td><td>Return for equity shareholders</td></tr>
+      <tr><td>EPS</td><td>(Net Profit − Pref Div) / No. of Equity Shares</td><td>Profit per equity share</td></tr>
+    </table>
+
+    <strong>CATEGORY 4 — Activity / Turnover Ratios</strong>
+    <table>
+      <tr><th>Ratio</th><th>Formula</th><th>Meaning</th></tr>
+      <tr><td>Inventory Turnover</td><td>COGS / Average Inventory</td><td>How many times stock sold per year; higher = better</td></tr>
+      <tr><td>Debtor Collection Period</td><td>(Debtors / Net Sales) × 365</td><td>Days taken to collect from customers; lower = better</td></tr>
+      <tr><td>Creditor Payment Period</td><td>(Creditors / Purchases) × 365</td><td>Days taken to pay suppliers; higher = better (free finance)</td></tr>
+      <tr><td>Fixed Assets Turnover</td><td>Net Sales / Net Fixed Assets</td><td>Revenue generated per ₹ of fixed assets; higher = better</td></tr>
+    </table>
+
+    <strong>Limitations of Ratio Analysis:</strong>
+    <ul class="list">
+      <li>Based on historical data — may not predict the future</li>
+      <li>Different accounting policies make inter-firm comparison unreliable</li>
+      <li>Window dressing can distort ratios (e.g., repay loans temporarily before year-end)</li>
+      <li>Inflation distorts multi-year comparisons</li>
+      <li>A single ratio in isolation is meaningless — must compare with industry standards</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 6. INVENTORY MANAGEMENT ===== -->
+<div id="inventory" class="section-header">
+  <div class="pt">Topic 6 · Appeared in 5 of 8 Papers</div>
+  <h2>Inventory Management</h2>
+  <div class="meta">EOQ · ABC Analysis · Reasons · Objectives · Inventory Levels</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">Explain reasons for holding inventory, objectives of inventory management. Explain EOQ approach. Also define: Reorder Point, Minimum, Maximum, Safety Stock levels.</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Reasons for Holding Inventory:</strong>
+    <ul class="list">
+      <li>Ensure <span class="kt">uninterrupted production</span> — buffer against supply delays or supplier failures</li>
+      <li>Meet customer demand without stockouts (lost sales prevention)</li>
+      <li>Seasonal demand patterns require advance stocking</li>
+      <li>Bulk purchase discounts justify holding higher inventory</li>
+      <li>Hedge against future price increases</li>
+      <li>Work-in-process inventory is unavoidable in manufacturing</li>
+    </ul>
+
+    <strong>Objectives of Inventory Management:</strong>
+    <ul class="list">
+      <li>Minimise total inventory costs (ordering cost + carrying cost + stockout cost)</li>
+      <li>Ensure uninterrupted supply for production and sales</li>
+      <li>Prevent both overstocking (wastage, cost) and understocking (production halt)</li>
+      <li>Minimise investment locked in inventory (release capital for other uses)</li>
+      <li>Prevent obsolescence and deterioration of stored goods</li>
+    </ul>
+
+    <strong>EOQ — Economic Order Quantity:</strong><br>
+    EOQ is the order size that <span class="kt">minimises total of ordering cost + carrying cost</span>.
+    <div class="formula">EOQ = √(2FU / PC)
+
+U = Annual demand (units)
+F = Fixed cost per order (ordering cost)
+P = Purchase price per unit
+C = Annual carrying cost as % of unit price
+
+At EOQ: Ordering Cost = Carrying Cost → Total Inventory Cost is MINIMUM</div>
+
+    <strong>Example:</strong> U=1000 units, F=₹200, P=₹10, C=20%<br>
+    EOQ = √(2×200×1000 / 10×0.20) = √(4,00,000/2) = √2,00,000 = <span class="kt">~447 units</span><br><br>
+
+    <strong>ABC Analysis:</strong>
+    <table>
+      <tr><th>Category</th><th>% of Items</th><th>% of Value</th><th>Control Required</th></tr>
+      <tr><td>A – High Value</td><td>10–15%</td><td>70–75%</td><td>Tight control; frequent review; low safety stock</td></tr>
+      <tr><td>B – Medium Value</td><td>20–25%</td><td>20–25%</td><td>Moderate control; periodic review</td></tr>
+      <tr><td>C – Low Value</td><td>60–70%</td><td>5–10%</td><td>Minimal control; bulk orders acceptable</td></tr>
+    </table>
+
+    <strong>Inventory Level Formulas:</strong>
+    <div class="formula">Reorder Point   = (Max Daily Usage × Max Lead Time)
+              OR  = Normal Usage × Lead Time + Safety Stock
+
+Minimum Level   = Reorder Point − (Normal Usage × Normal Lead Time)
+Maximum Level   = Reorder Point + EOQ − (Min Usage × Min Lead Time)
+Safety Stock    = (Max Usage − Normal Usage) × Max Lead Time</div>
+  </div>
+</div>
+
+<!-- ===== 7. FINANCIAL MANAGEMENT ===== -->
+<div id="finmgmt" class="section-header">
+  <div class="pt">Topic 7 · Appeared in 4 of 8 Papers</div>
+  <h2>Financial Management</h2>
+  <div class="meta">Objectives · 4 Decisions · Wealth vs Profit Max · Agency Theory · Nature & Scope</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">Discuss the nature and scope of financial management. Explain the four key decisions. Discuss objectives — why is Wealth Maximisation superior to Profit Maximisation?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Nature of Financial Management:</strong><br>
+    Financial Management = Planning, organising, directing and controlling the <span class="kt">procurement and utilisation of funds</span>. It evolved through three phases:<br>
+    <ul class="list">
+      <li><strong>Traditional Phase:</strong> Focus only on raising funds; external perspective (early 1900s)</li>
+      <li><strong>Transitional Phase:</strong> Focus on internal fund planning and liquidity; solving day-to-day financial problems</li>
+      <li><strong>Modern Phase:</strong> Application of economic theories + quantitative methods (financial modelling, risk analysis, shareholder wealth)</li>
+    </ul>
+
+    <strong>Four Key Decisions of a Finance Manager:</strong>
+    <table>
+      <tr><th>Decision</th><th>Focus</th><th>Tools Used</th></tr>
+      <tr><td><strong>1. Investment Decision</strong></td><td>Where to deploy funds — long-term (capital budgeting) + short-term (WC management)</td><td>NPV, IRR, Payback, EOQ</td></tr>
+      <tr><td><strong>2. Financing Decision</strong></td><td>Optimal mix of equity and debt (capital structure) to minimise cost of capital</td><td>Debt-Equity Ratio, WACC</td></tr>
+      <tr><td><strong>3. Dividend Decision</strong></td><td>How much profit to distribute as dividend vs retain for reinvestment</td><td>Dividend payout ratio, Retention ratio</td></tr>
+      <tr><td><strong>4. Liquidity Decision</strong></td><td>Managing cash and current assets for smooth day-to-day operations</td><td>Cash budget, Current Ratio</td></tr>
+    </table>
+
+    <strong>Profit Maximisation vs Wealth Maximisation:</strong>
+    <table>
+      <tr><th>Basis</th><th>Profit Maximisation</th><th>Wealth Maximisation</th></tr>
+      <tr><td>Measurement</td><td>Net Profit / EPS — vague (which profit?)</td><td>Market value of equity shares — clear and objective</td></tr>
+      <tr><td>Time Value of Money</td><td>Ignored</td><td>Fully considered (uses discounted cash flows)</td></tr>
+      <tr><td>Risk</td><td>Ignored</td><td>Fully considered</td></tr>
+      <tr><td>Time Horizon</td><td>Short-term focus</td><td>Long-term sustainable growth</td></tr>
+      <tr><td>Social Responsibility</td><td>May encourage exploitation</td><td>Consistent with ethical, social goals</td></tr>
+      <tr><td>Who advocates</td><td>Traditional view</td><td>Ezra Solomon (Stanford), Prof. Irwin Friend</td></tr>
+    </table>
+
+    <div class="tip"><strong>Conclusion:</strong> The firm should aim for <strong>Wealth Maximisation = Maximisation of market value of equity shares</strong>. Profit maximisation is a short-term means, not the ultimate end. Wealth maximisation naturally incorporates TVM, risk, and long-term orientation.</div>
+  </div>
+</div>
+
+<!-- ===== 8. COST OF CAPITAL ===== -->
+<div id="costcap" class="section-header">
+  <div class="pt">Topic 8 · Appeared in 4 of 8 Papers</div>
+  <h2>Cost of Capital & WACC</h2>
+  <div class="meta">Cost of equity (4 approaches) · Cost of debt · WACC formula · Relevance</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What do you understand by Cost of Capital? Explain the various techniques to determine cost of equity capital. Differentiate Cost of Capital from WACC.</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Cost of Capital:</strong> The <span class="kt">minimum return that a firm must earn</span> on its investments to satisfy its investors and maintain its market value. It is the price paid for using capital.<br><br>
+
+    <strong>Constituents of Capital and Their Costs:</strong>
+    <table>
+      <tr><th>Source</th><th>Formula</th><th>Notes</th></tr>
+      <tr><td>Cost of Debentures (Kd)</td><td>Kd = [I(1−t) + (F−P)/n] / [(F+P)/2]</td><td>I=Annual interest; t=tax; F=Face; P=Net proceeds; n=years</td></tr>
+      <tr><td>Cost of Preference (Kp)</td><td>Kp = [D + (F−P)/n] / [(F+P)/2]</td><td>D=Dividend; No tax benefit on preference dividend</td></tr>
+      <tr><td>Cost of Equity (Ke)</td><td>4 approaches (see below)</td><td>Most difficult to calculate</td></tr>
+      <tr><td>Cost of Retained Earnings (Kr)</td><td>Same as Ke (opportunity cost approach)</td><td>Not free — shareholders forgo dividends</td></tr>
+    </table>
+
+    <strong>4 Approaches to Determine Cost of Equity (Ke):</strong>
+    <table>
+      <tr><th>Approach</th><th>Formula</th><th>Key Factor</th></tr>
+      <tr><td><strong>1. Dividend Forecast (Gordon's Model)</strong></td><td>Ke = D₁/P₀ + g</td><td>D₁=next year dividend; P₀=current market price; g=growth rate</td></tr>
+      <tr><td><strong>2. CAPM (Capital Asset Pricing Model)</strong></td><td>Ke = Rf + β(Rm − Rf)</td><td>Rf=risk-free rate; β=Beta (systematic risk); Rm=market return</td></tr>
+      <tr><td><strong>3. Earnings-Price Ratio</strong></td><td>Ke = E₁/P₀</td><td>E₁=Expected EPS next year; P₀=current price</td></tr>
+      <tr><td><strong>4. Bond Yield + Risk Premium</strong></td><td>Ke = Kd + Risk Premium</td><td>Equity risk premium is subjective (typically 3–5%)</td></tr>
+    </table>
+
+    <strong>WACC (Weighted Average Cost of Capital):</strong>
+    <div class="formula">WACC = Σ(Wᵢ × Kᵢ)
+
+Example:
+Sources: Equity ₹60L (Ke=16%), Debt ₹40L (Kd=8% after tax)
+WACC = (60/100)×16% + (40/100)×8% = 9.6% + 3.2% = 12.8%</div>
+
+    <strong>Cost of Capital vs WACC:</strong>
+    <table>
+      <tr><th>Cost of Capital</th><th>WACC</th></tr>
+      <tr><td>Specific to ONE source of finance</td><td>Blended rate for ALL sources of capital</td></tr>
+      <tr><td>Kd = 8%; Ke = 16% (separate rates)</td><td>WACC = 12.8% (overall blended rate)</td></tr>
+      <tr><td>Used to evaluate individual financing decisions</td><td>Used as discount rate in NPV; hurdle rate for capital budgeting</td></tr>
+    </table>
+
+    <strong>Relevance of Cost of Capital:</strong>
+    <ul class="list">
+      <li>Used as discount rate in NPV → determines which investment projects to accept</li>
+      <li>Helps design optimal capital structure (minimise WACC → maximise firm value)</li>
+      <li>Economic Value Added (EVA) = NOPAT − (WACC × Capital Employed)</li>
+      <li>Lease vs buy decisions compare leasing cost with cost of capital</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 9. FINANCIAL STATEMENT ANALYSIS ===== -->
+<div id="fsa" class="section-header">
+  <div class="pt">Topic 9 · Appeared in 4 of 8 Papers</div>
+  <h2>Financial Statement Analysis</h2>
+  <div class="meta">Definition · Techniques · Users · Limitations</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is Financial Statement Analysis? Discuss the various techniques. Who are the users and what are its limitations?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Definition:</strong> FSA is the <span class="kt">systematic numerical calculation of relationships between financial figures</span> to measure a firm's profitability, efficiency, liquidity, and growth potential.<br><br>
+
+    <strong>Four Techniques of FSA:</strong>
+    <table>
+      <tr><th>Technique</th><th>What it Does</th><th>Best Used For</th></tr>
+      <tr><td><strong>1. Comparative Statements</strong></td><td>Side-by-side 2+ years; shows ₹ change and % change for each item</td><td>Trend spotting within one firm over time</td></tr>
+      <tr><td><strong>2. Common-Size Statements</strong></td><td>All items expressed as % of base (Sales for P&L; Total Assets for B/S)</td><td>Inter-firm comparison; removing size effect</td></tr>
+      <tr><td><strong>3. Trend Analysis</strong></td><td>Base year = 100%; all years expressed as % of base year figure</td><td>Long-term direction (5–10 years)</td></tr>
+      <tr><td><strong>4. Ratio Analysis</strong></td><td>Mathematical relationship between two related figures</td><td>Liquidity, solvency, profitability diagnosis</td></tr>
+    </table>
+
+    <strong>Users and Their Needs:</strong>
+    <table>
+      <tr><th>User</th><th>What They Want to Know</th></tr>
+      <tr><td>Management</td><td>All-round performance; cost control; future planning</td></tr>
+      <tr><td>Shareholders/Owners</td><td>Profitability; EPS; dividend; growth</td></tr>
+      <tr><td>Trade Creditors</td><td>Short-term liquidity; will they get paid on time?</td></tr>
+      <tr><td>Banks/Lenders</td><td>Long-term solvency; interest payment capacity; DSCR</td></tr>
+      <tr><td>Government</td><td>Tax computation; national income; regulation compliance</td></tr>
+      <tr><td>Employees</td><td>Job security; profitability for bonus</td></tr>
+      <tr><td>Investors/Researchers</td><td>Investment potential; growth prospects; EPS trends</td></tr>
+    </table>
+
+    <strong>Limitations of Financial Statement Analysis:</strong>
+    <ul class="list">
+      <li>Based on historical data — may not predict future performance</li>
+      <li>Inflation distorts multi-year comparisons (₹100 in 2010 ≠ ₹100 in 2025)</li>
+      <li>Different accounting policies (SLM vs WDV depreciation; FIFO vs LIFO) make inter-firm comparison unreliable</li>
+      <li>Window dressing — firms manipulate year-end figures to show better ratios</li>
+      <li>Subjectivity in provisions (bad debts, depreciation rates) affects financial figures</li>
+      <li>Ratios are only as good as the underlying data — garbage in, garbage out</li>
+    </ul>
+
+    <div class="tip">Financial figures are "dumb" on their own — they only speak when compared, related, and interpreted. That is the purpose of FSA.</div>
+  </div>
+</div>
+
+<!-- ===== 10. FUNDS FLOW STATEMENT ===== -->
+<div id="funds" class="section-header">
+  <div class="pt">Topic 10 · Appeared in 3 of 8 Papers</div>
+  <h2>Funds Flow Statement</h2>
+  <div class="meta">Definition · Importance · Preparation procedure · Managerial uses</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is a Funds Flow Statement? Explain its importance to management and discuss in detail the procedure for its construction.</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Definition:</strong> Funds Flow Statement shows the <span class="kt">sources and applications (uses) of funds (Working Capital)</span> between two Balance Sheet dates.<br>
+    Robert N. Anthony: "It describes the sources from which additional funds were derived and the use to which these sources were put."<br>
+    "Funds" here means = <span class="kt">Working Capital (Current Assets − Current Liabilities)</span><br><br>
+
+    <strong>Importance to Management:</strong>
+    <ul class="list">
+      <li>Explains WHY working capital changed between two periods</li>
+      <li>Helps management plan future fund requirements and capital expenditure</li>
+      <li>Shows whether funds generated from operations are adequate for growth</li>
+      <li>Useful for creditors/banks to assess fund management quality</li>
+      <li>Identifies pattern of sources and uses for policy formulation</li>
+    </ul>
+
+    <strong>Procedure for Construction — Two Steps:</strong><br><br>
+    <strong>Step 1: Schedule of Changes in Working Capital</strong><br>
+    Rule: Increase in CA or Decrease in CL → Increases WC (+). Decrease in CA or Increase in CL → Decreases WC (−).
+    <table>
+      <tr><th>Item</th><th>Year 1 ₹</th><th>Year 2 ₹</th><th>Increase WC (+)</th><th>Decrease WC (−)</th></tr>
+      <tr><td>Debtors</td><td>XX</td><td>XX</td><td>If Debtors increased</td><td>If Debtors decreased</td></tr>
+      <tr><td>Stock</td><td>XX</td><td>XX</td><td>If Stock increased</td><td>If Stock decreased</td></tr>
+      <tr><td>Creditors</td><td>XX</td><td>XX</td><td>If Creditors decreased</td><td>If Creditors increased</td></tr>
+      <tr><td>Net Increase / Decrease in WC</td><td></td><td></td><td>XX</td><td>XX</td></tr>
+    </table>
+
+    <strong>Step 2: Funds Flow Statement</strong>
+    <table class="acc-table">
+      <tr><th>Sources of Funds</th><th>₹</th><th>Application of Funds</th><th>₹</th></tr>
+      <tr><td>Funds from Operations = Net Profit + Depreciation + other non-cash charges</td><td>XX</td><td>Purchase of Fixed Assets</td><td>XX</td></tr>
+      <tr><td>Issue of Shares / Debentures</td><td>XX</td><td>Repayment of Long-term Loans</td><td>XX</td></tr>
+      <tr><td>Long-term Loans raised</td><td>XX</td><td>Dividends Paid</td><td>XX</td></tr>
+      <tr><td>Sale of Fixed Assets / Investments</td><td>XX</td><td>Tax Paid</td><td>XX</td></tr>
+      <tr><td>Decrease in WC (if applicable)</td><td>XX</td><td>Increase in WC (if applicable)</td><td>XX</td></tr>
+      <tr><td class="tr">Total Sources</td><td class="tr">XX</td><td class="tr">Total Applications</td><td class="tr">XX</td></tr>
+    </table>
+
+    <strong>Key Difference — Funds Flow vs Cash Flow:</strong>
+    <table>
+      <tr><th>Funds Flow Statement</th><th>Cash Flow Statement</th></tr>
+      <tr><td>Funds = Working Capital (broader concept)</td><td>Funds = Cash and Cash Equivalents only</td></tr>
+      <tr><td>Governed by AS-3 (older Indian standard)</td><td>Governed by AS-3 (Revised) / IND AS-7</td></tr>
+      <tr><td>Shows changes in WC level</td><td>Shows actual cash movement</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 11. CASH MANAGEMENT ===== -->
+<div id="cash" class="section-header">
+  <div class="pt">Topic 11 · Appeared in 3 of 8 Papers</div>
+  <h2>Cash Management & Baumol's Model</h2>
+  <div class="meta">Motives · Cash Budget · Baumol Model · Float types</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What are the motives for holding cash? Explain the cash management cycle. Explain Baumol's model for determining optimum cash balance.</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Three Motives for Holding Cash (Keynes):</strong>
+    <table>
+      <tr><th>Motive</th><th>Description</th><th>Example</th></tr>
+      <tr><td><strong>Transaction Motive</strong></td><td>Cash needed for routine day-to-day payments in the normal course of business</td><td>Paying salaries, purchasing raw materials, paying overheads</td></tr>
+      <tr><td><strong>Precautionary Motive</strong></td><td>Cash kept as buffer for unexpected events or emergencies</td><td>Sudden machine breakdown; urgent procurement; unexpected bills</td></tr>
+      <tr><td><strong>Speculative Motive</strong></td><td>Cash kept to exploit unexpected profitable opportunities</td><td>Buying inventory when prices suddenly fall; acquiring distressed assets</td></tr>
+    </table>
+
+    <strong>Cash Management Cycle:</strong><br>
+    Cash → Raw Materials → WIP → Finished Goods → Debtors → <span class="kt">Cash</span> (operating cycle repeating).<br>
+    Management objective: <span class="kt">Speed up inflows; slow down outflows; invest surplus wisely.</span><br><br>
+
+    <strong>Types of Float:</strong>
+    <ul class="list">
+      <li><strong>Disbursement Float:</strong> Cheques written but not yet cleared from firm's bank account (firm benefits)</li>
+      <li><strong>Collection Float:</strong> Cheques received but not yet cleared into firm's account (firm loses — reduces available cash)</li>
+      <li><strong>Net Float:</strong> Disbursement Float − Collection Float (positive net float = firm gains)</li>
+    </ul>
+
+    <strong>Baumol's Model for Optimum Cash Balance:</strong><br>
+    Baumol applied the EOQ concept to cash management. The firm converts marketable securities to cash in optimal amounts — balancing transaction cost (fixed cost per conversion) vs opportunity cost (interest foregone on idle cash).
+
+    <div class="formula">Optimum Cash Balance (C*) = √(2TC / I)
+
+T = Total cash needed per period (annual cash outflow)
+C = Fixed cost per transaction (cost of converting securities to cash)
+I = Opportunity cost = Interest rate on marketable securities
+
+Number of conversions per year = T / C*
+Total Cost = Transaction Cost + Opportunity Cost = √(2TCI)</div>
+
+    <strong>Example:</strong><br>
+    T = ₹12,00,000/year, C = ₹500/transaction, I = 10%<br>
+    C* = √(2 × 12,00,000 × 500 / 0.10) = √(12,00,00,000) = <span class="kt">₹34,641</span><br>
+    Conversions per year = 12,00,000 / 34,641 = ~34.6 times<br><br>
+
+    <strong>Limitation of Baumol's Model:</strong> Assumes cash outflows are uniform (steady rate) — in reality they are uneven. Miller-Orr model (uses upper and lower control limits) is better for irregular cash flows.
+
+    <strong>Cash Budget Format:</strong>
+    <table class="acc-table">
+      <tr><th>Particulars</th><th>Jan ₹</th><th>Feb ₹</th><th>Mar ₹</th></tr>
+      <tr><td>Opening Cash Balance</td><td>XX</td><td>XX</td><td>XX</td></tr>
+      <tr><td>Add: Cash Receipts (Sales collections, loans, etc.)</td><td>XX</td><td>XX</td><td>XX</td></tr>
+      <tr><td>Less: Cash Payments (Purchases, wages, overheads, tax)</td><td>(XX)</td><td>(XX)</td><td>(XX)</td></tr>
+      <tr><td class="tr">Closing Balance (surplus or deficit)</td><td class="tr">XX</td><td class="tr">XX</td><td class="tr">XX</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 12. ANNUAL REPORT ===== -->
+<div id="annrep" class="section-header">
+  <div class="pt">Topic 12 · Appeared in 3 of 8 Papers</div>
+  <h2>Annual Report</h2>
+  <div class="meta">Definition · Contents · Usefulness to internal and external users</div>
+</div>
+
+<div class="qb">
+  <div class="qh"><div class="qn">Q</div><div class="qt">What is an Annual Report of a company? What kind of information is contained in it and how is it useful to internal and external users?</div><div class="qm">20</div></div>
+  <div class="qa">
+    <strong>Definition:</strong> Annual Report is a <span class="kt">comprehensive regulatory document</span> that every company prepares, providing financial and non-financial information about its operations, performance, and future prospects for the year.<br>
+    It is the primary communication channel between a company and its <span class="kt">stakeholders</span>.<br><br>
+
+    <strong>Contents of Annual Report:</strong>
+    <table>
+      <tr><th>Section</th><th>What it Contains</th></tr>
+      <tr><td>General Information</td><td>Business segments, products, operations overview, company history</td></tr>
+      <tr><td>Director's Report</td><td>Management's view on performance, challenges, future strategy, dividend recommendation</td></tr>
+      <tr><td>Audited Financial Statements</td><td>P&L Account, Balance Sheet, Cash Flow Statement, Notes to Accounts</td></tr>
+      <tr><td>Management Discussion &amp; Analysis (MDA)</td><td>Business performance analysis, risks, outlook, industry comparison</td></tr>
+      <tr><td>Corporate Governance Report</td><td>Board composition, committees (Audit, Remuneration), compliance with regulations</td></tr>
+      <tr><td>Shareholding Pattern</td><td>Who holds shares — promoters, FIIs, retail — and percentage</td></tr>
+      <tr><td>Share Price Data</td><td>Monthly high/low market prices; dividend declared per share</td></tr>
+      <tr><td>CSR Report</td><td>Social responsibility activities and amounts spent (required for eligible companies)</td></tr>
+      <tr><td>Auditor's Report</td><td>Independent opinion on whether financial statements show true and fair view</td></tr>
+    </table>
+
+    <strong>Usefulness to Internal Users:</strong>
+    <table>
+      <tr><th>User</th><th>How Annual Report Helps</th></tr>
+      <tr><td>Shareholders / Owners</td><td>Assess profitability, EPS, dividend; evaluate if investment is safe and growing; hold or sell decision</td></tr>
+      <tr><td>Management</td><td>Benchmark performance; set future targets; evaluate department heads; make pricing/policy decisions</td></tr>
+      <tr><td>Employees</td><td>Assess financial health; verify bonus and profit-sharing entitlement; judge job security</td></tr>
+    </table>
+
+    <strong>Usefulness to External Users:</strong>
+    <table>
+      <tr><th>User</th><th>How Annual Report Helps</th></tr>
+      <tr><td>Prospective Investors</td><td>Compare investment options; assess earning capacity and future growth potential</td></tr>
+      <tr><td>Banks / Lenders</td><td>Evaluate creditworthiness for loans; assess interest payment capacity and solvency</td></tr>
+      <tr><td>Trade Creditors / Suppliers</td><td>Decide credit terms based on buyer's financial soundness and liquidity</td></tr>
+      <tr><td>Government / Tax Authorities</td><td>Tax collection; national income data; verify regulatory compliance</td></tr>
+      <tr><td>Researchers / Analysts</td><td>Industry studies; investment recommendations; sector research</td></tr>
+      <tr><td>Stock Exchanges / SEBI</td><td>Fair price discovery of listed securities; investor protection; market regulation</td></tr>
+    </table>
+
+    <div class="tip"><strong>Information Gap:</strong> Annual Report bridges the gap between what management knows and what external stakeholders need to know. Without it, investors would have to rely on rumours and incomplete information.</div>
+  </div>
+</div>
+
+<!-- ===== FINAL EXAM STRATEGY ===== -->
+<div style="background:rgba(167,139,250,0.08);border:1px solid var(--purple);border-radius:9px;padding:22px;margin:28px 0;">
+  <h2 style="color:var(--purple);font-size:1.2rem;margin-bottom:14px;">🎯 Your Exam Strategy for Tomorrow</h2>
+
+  <div style="background:#0d1535;border-radius:7px;padding:16px;margin-bottom:14px;">
+    <strong style="color:var(--accent2);">Step 1 – First 2 minutes:</strong><br>
+    <span style="color:var(--text);">Read ALL 8 questions. Mark the 5 you know best. Don't start writing yet.</span>
+  </div>
+
+  <div style="background:#0d1535;border-radius:7px;padding:16px;margin-bottom:14px;">
+    <strong style="color:var(--accent2);">Step 2 – Safe 5 questions to always attempt:</strong>
+    <table style="margin-top:10px;">
+      <tr><th>Priority</th><th>Topic</th><th>Why</th></tr>
+      <tr><td>1st</td><td>Accounting Concepts (4×5)</td><td>Appears in EVERY paper. Pure theory. 20 easy marks.</td></tr>
+      <tr><td>2nd</td><td>Cash Flow Statement</td><td>Structure is fixed. Write format + 3 activities. 18-20 marks.</td></tr>
+      <tr><td>3rd</td><td>Working Capital + Operating Cycle</td><td>Formulas + factors + table. Well covered. 16-18 marks.</td></tr>
+      <tr><td>4th</td><td>Capital Budgeting OR Ratio Analysis</td><td>Pick whichever appears. Both fully covered. 15-18 marks.</td></tr>
+      <tr><td>5th</td><td>Financial Management OR Inventory (EOQ)</td><td>Theory + formula questions. Easy to write. 15-18 marks.</td></tr>
+    </table>
+  </div>
+
+  <div style="background:#0d1535;border-radius:7px;padding:16px;margin-bottom:14px;">
+    <strong style="color:var(--accent2);">Step 3 – Answer writing format (for every question):</strong><br>
+    <span style="color:var(--text);">Definition → Explanation → Table or Formula → Example → Conclusion/Importance<br>
+    Always write headings in bold. Use numbered points. Leave spacing between sub-parts.<br>
+    Even a partially correct answer with good structure gets partial marks.</span>
+  </div>
+
+  <div style="background:#0d2010;border:2px solid var(--green);border-radius:7px;padding:16px;">
+    <strong style="color:var(--green);">Bottom Line:</strong><br>
+    <span style="color:var(--text);">These 12 topics cover everything you need. IGNOU pass mark = 35/100.<br>
+    5 questions × decent answers = <strong style="color:var(--accent2);">60-75 marks</strong>.<br>
+    <strong style="color:var(--green);">You will pass. Now stop reading and get some rest. 🚀</strong></span>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<script>
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.sidenav a');
+window.addEventListener('scroll',()=>{
+  let c='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)c=s.id;});
+  navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});
+});
+</script>
+</body>
+</html>
