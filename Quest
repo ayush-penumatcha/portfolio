@@ -1,0 +1,46 @@
+Write a Python Program to implement Depth First Search.
+Implement the Water Jug problem in Python.
+Write a Python Program to implement the Min-Max Algorithm.
+Write a Python Program to implement the Backtracking approach to solve the N Queens problem
+Discuss the Naïve Bayes algorithm and write the Python code to demonstrate the execution of the Naïve Bayes algorithm on the dataset of your choice.
+Implement multiple regression in Python. Take the dataset of your choice as input.
+Take a real-time example to implement the ID3 decision tree classification algorithm in Python.
+Write a Python Program to implement the Apriori algorithmona dataset of your own choice.
+
+
+--------------------------------
+
+
+Use Google Docs to create a document containing the guidelines for preparing and submitting the
+MCS-229 practical assignment. Store it on Google Drive and share it with five friends who can view
+and comment on the guidelines.
+
+
+Use Google Sheets to create a spreadsheet containing the cloud storage cost of any four cloud services.
+Store this cost as per the following headings:
+Cloud Service; Web Address of Service; Space Required in GB; Cost per GB; Storage Cost; Discount,
+if any; Net Cost.
+You may use the following formulas for making the spreadsheet:
+Storage Cost = Space Required in GB * Cost per GB
+Discount is computed as:
+If Storage Cost <1,00,000 Discount =0
+For Storage Cost >= 1,00,000 but <5,00,000
+Discount = 10% of Storage Cost
+For Storage Cost >=5,00,000
+Discount = 25% of Storage Cost
+Net Cost = Storage Cost- Discount
+
+Use Google Slides and prepare nine slides on the topic "Cloud Deployment Models" (Public, Private,
+Hybrid, Community) in a group of three students by sharing the Google Slides in your group in edit
+mode. Every group member should create three slides and contribute to the slides of other group
+members using the Google Slides.
+
+
+2. Using the AWS Free Tier (trial version), explore Amazon S3 cloud storage and Amazon RDS
+services.
+
+3. Use Google App Engine to write a program that finds the transpose of a given matrix. The program
+should accept matrix input, transpose it on the server, and display the resulting matrix. Deploy it on
+the Google Cloud.
+
+Datascience
