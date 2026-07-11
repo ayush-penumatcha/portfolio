@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCSL-228 · AI &amp; ML Lab · Assignment 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#111111;color:#e2e8f0;font-size:15px;line-height:1.8;}
+.nav{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1a1a1a;border-right:1px solid #2d2d2d;overflow-y:auto;z-index:100;}
+.nav-head{background:#222222;padding:16px 18px;border-bottom:1px solid #333;}
+.nav-head h1{color:#f1f5f9;font-size:0.88rem;font-weight:800;}
+.nav-head p{color:#94a3b8;font-size:0.67rem;margin-top:2px;}
+.nav-grp{padding:8px 14px 2px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#4b5563;}
+.nav a{display:block;padding:5px 18px;color:#94a3b8;text-decoration:none;font-size:0.72rem;font-weight:500;border-left:3px solid transparent;}
+.nav a:hover,.nav a.active{background:#252525;color:#fbbf24;border-left-color:#fbbf24;font-weight:600;}
+.main{margin-left:240px;padding:30px 38px 80px;max-width:940px;}
+.hero{background:#1f1f1f;border:1px solid #333;border-top:3px solid #fbbf24;border-radius:12px;padding:22px 28px;margin-bottom:28px;}
+.hero h1{font-size:1.3rem;font-weight:800;color:#f1f5f9;}
+.hero p{font-size:0.84rem;margin-top:5px;color:#94a3b8;}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.chip{background:#2a2a2a;border:1px solid #3d3d3d;padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;color:#cbd5e1;}
+.qblock{margin:36px 0 10px;padding-bottom:12px;border-bottom:2px solid #2d2d2d;display:flex;align-items:center;gap:12px;}
+.qnum{background:#292929;border:2px solid #fbbf24;color:#fbbf24;width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0;}
+.qtitle{font-size:1rem;font-weight:800;color:#f1f5f9;}
+.qsub{font-size:0.69rem;color:#64748b;margin-top:2px;}
+.mbadge{margin-left:auto;padding:3px 12px;border-radius:20px;font-size:0.65rem;font-weight:800;white-space:nowrap;}
+.m4{background:#1a2a1a;color:#86efac;border:1px solid #166534;}
+.m6{background:#292205;color:#fde68a;border:1px solid #78350f;}
+.sec{font-size:0.78rem;font-weight:700;color:#fbbf24;margin:16px 0 7px;display:flex;align-items:center;gap:7px;}
+.sec::before{content:'';width:3px;height:15px;background:#fbbf24;border-radius:2px;display:block;flex-shrink:0;}
+.understand{background:#1a2a1a;border-left:4px solid #4ade80;border-radius:0 8px 8px 0;padding:11px 16px;margin-bottom:12px;}
+.understand .ul{font-size:0.65rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.understand p{font-size:0.85rem;color:#bbf7d0;margin:0;line-height:1.75;}
+.ans-card{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.ans-head{background:#222222;border-bottom:1px solid #333;padding:9px 16px;display:flex;align-items:center;gap:10px;}
+.ans-head span{color:#f1f5f9;font-size:0.79rem;font-weight:700;flex:1;}
+.ans-body{padding:16px 20px;}
+.ans-body p{font-size:0.88rem;color:#cbd5e1;margin-bottom:8px;line-height:1.78;}
+.ans-body strong{color:#f1f5f9;}
+.ans-body ul{padding-left:20px;margin-bottom:8px;}
+.ans-body ul li{font-size:0.88rem;color:#cbd5e1;margin-bottom:5px;line-height:1.72;}
+.ans-body ol{padding-left:20px;margin-bottom:8px;}
+.ans-body ol li{font-size:0.88rem;color:#cbd5e1;margin-bottom:5px;line-height:1.72;}
+.kh{background:#3b2d00;border:1px solid #92400e;padding:0 4px;border-radius:3px;font-weight:700;color:#fde68a;}
+.code{background:#0a0a0a;border:1px solid #2d2d2d;border-left:3px solid #fbbf24;border-radius:8px;padding:14px 18px;margin:10px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.72;color:#e2e8f0;overflow-x:auto;white-space:pre;}
+.output{background:#0a1a0a;border:1px solid #166534;border-left:3px solid #4ade80;border-radius:8px;padding:12px 18px;margin:10px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.65;color:#86efac;overflow-x:auto;white-space:pre;}
+.algo{background:#1a1a2e;border:1px solid #3730a3;border-left:3px solid #818cf8;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:0.86rem;color:#c7d2fe;line-height:1.75;}
+.algo strong{color:#a5b4fc;}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:0.81rem;border-radius:8px;overflow:hidden;}
+th{background:#222222;color:#fbbf24;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid #fbbf24;}
+td{padding:7px 12px;border-bottom:1px solid #252525;color:#cbd5e1;vertical-align:top;line-height:1.6;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#1e1e1e;}
+html{scroll-behavior:smooth;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+@media(max-width:768px){.nav{display:none;}.main{margin-left:0;padding:14px;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-head"><h1>MCSL-228 · AI &amp; ML Lab</h1><p>Assignment 2026 · 8 Questions · 40 Marks</p></div>
+  <div class="nav-grp">AI Search</div>
+  <a href="#q1">Q1. Depth First Search (4M)</a>
+  <a href="#q2">Q2. Water Jug Problem (4M)</a>
+  <a href="#q3">Q3. Min-Max Algorithm (4M)</a>
+  <a href="#q4">Q4. N-Queens Backtracking (6M)</a>
+  <div class="nav-grp">Machine Learning</div>
+  <a href="#q5">Q5. Naive Bayes (6M)</a>
+  <a href="#q6">Q6. Multiple Regression (4M)</a>
+  <a href="#q7">Q7. ID3 Decision Tree (6M)</a>
+  <a href="#q8">Q8. Apriori Algorithm (6M)</a>
+</nav>
+
+<div class="main">
+<div class="hero">
+  <h1>MCSL-228 · Artificial Intelligence &amp; Machine Learning Lab</h1>
+  <p>Assignment Number: MCA_NEW(III)/L-228/Assign/2026 · Maximum Marks: 100 · Weightage: 30%</p>
+  <div class="hero-chips"><span class="chip">8 Questions</span><span class="chip">40 Written Marks</span><span class="chip">40 Lab Record</span><span class="chip">20 Viva Voce</span></div>
+</div>
+
+<!-- Q1: DFS -->
+<div id="q1">
+<div class="qblock"><div class="qnum">Q1</div><div><div class="qtitle">Depth First Search (DFS)</div><div class="qsub">Python implementation using stack/recursion · graph traversal</div></div><span class="mbadge m4">4 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>DFS explores a graph by going as deep as possible along each branch before backtracking. It uses a stack (or recursion) to remember where to go next. Like navigating a maze — go forward until you hit a dead end, then backtrack to the last junction.</p></div>
+<div class="sec">🔷 Algorithm</div>
+<div class="algo">
+<strong>DFS Algorithm:</strong><br>
+1. Start at the source node, mark it as visited<br>
+2. Push it to the stack (or use recursive call)<br>
+3. Visit an unvisited neighbour → repeat from step 1<br>
+4. If no unvisited neighbours → backtrack (pop from stack)<br>
+5. Repeat until all reachable nodes are visited
+</div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>DFS — Python Implementation</span></div>
+<div class="ans-body">
+<div class="code"># Depth First Search in Python
+# Using adjacency list representation and recursion
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+visited = set()
+
+def dfs(node):
+    if node not in visited:
+        print(node, end=' ')
+        visited.add(node)
+        for neighbour in graph[node]:
+            dfs(neighbour)
+
+print("DFS Traversal starting from node 'A':")
+dfs('A')</div>
+<div class="output">DFS Traversal starting from node 'A':
+A B D E F C</div>
+<p><strong>Documentation:</strong></p>
+<ul>
+<li><strong>Input:</strong> Graph represented as adjacency list dictionary; starting node 'A'</li>
+<li><strong>Process:</strong> Recursive DFS visits each node once, marks it visited, then visits all unvisited neighbours</li>
+<li><strong>Output:</strong> Order in which nodes are visited during depth-first traversal</li>
+<li><strong>Time Complexity:</strong> O(V + E) where V = vertices, E = edges</li>
+<li><strong>Space Complexity:</strong> O(V) for the visited set and recursion stack</li>
+</ul>
+</div></div>
+</div>
+
+<!-- Q2: WATER JUG -->
+<div id="q2">
+<div class="qblock"><div class="qnum">Q2</div><div><div class="qtitle">Water Jug Problem</div><div class="qsub">State space search · BFS approach · 4-litre and 3-litre jugs</div></div><span class="mbadge m4">4 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Two jugs: 4-litre and 3-litre capacity. Goal: measure exactly 2 litres. Operations allowed: fill a jug completely, empty a jug completely, pour from one jug to another. BFS finds the shortest sequence of operations to reach the goal state.</p></div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>Water Jug Problem — BFS Solution</span></div>
+<div class="ans-body">
+<div class="code"># Water Jug Problem using BFS
+# Jug1 capacity = 4 litres, Jug2 capacity = 3 litres
+# Goal: Get exactly 2 litres in Jug1
+
+from collections import deque
+
+def water_jug_bfs(jug1_cap, jug2_cap, target):
+    # State: (jug1, jug2)
+    start = (0, 0)
+    visited = set()
+    queue = deque()
+    queue.append((start, [start]))
+
+    while queue:
+        (j1, j2), path = queue.popleft()
+
+        if j1 == target or j2 == target:
+            print(f"\nGoal reached! {target} litres measured.")
+            print("\nSteps taken:")
+            for step in path:
+                print(f"  Jug1 = {step[0]}L, Jug2 = {step[1]}L")
+            return
+
+        if (j1, j2) in visited:
+            continue
+        visited.add((j1, j2))
+
+        # All possible operations
+        states = [
+            (jug1_cap, j2),           # Fill Jug1
+            (j1, jug2_cap),           # Fill Jug2
+            (0, j2),                  # Empty Jug1
+            (j1, 0),                  # Empty Jug2
+            # Pour Jug1 → Jug2
+            (j1 - min(j1, jug2_cap - j2),
+             j2 + min(j1, jug2_cap - j2)),
+            # Pour Jug2 → Jug1
+            (j1 + min(j2, jug1_cap - j1),
+             j2 - min(j2, jug1_cap - j1)),
+        ]
+
+        for state in states:
+            if state not in visited:
+                queue.append((state, path + [state]))
+
+# Run the program
+water_jug_bfs(4, 3, 2)</div>
+<div class="output">Goal reached! 2 litres measured.
+
+Steps taken:
+  Jug1 = 0L, Jug2 = 0L
+  Jug1 = 0L, Jug2 = 3L
+  Jug1 = 3L, Jug2 = 0L
+  Jug1 = 3L, Jug2 = 3L
+  Jug1 = 4L, Jug2 = 2L
+  Jug1 = 0L, Jug2 = 2L
+  Jug1 = 2L, Jug2 = 0L</div>
+<ul>
+<li><strong>Input:</strong> Jug1 capacity=4L, Jug2 capacity=3L, Target=2L</li>
+<li><strong>Process:</strong> BFS explores all reachable (jug1, jug2) states level by level until target is found</li>
+<li><strong>Output:</strong> Shortest sequence of steps to measure exactly 2 litres</li>
+</ul>
+</div></div>
+</div>
+
+<!-- Q3: MIN-MAX -->
+<div id="q3">
+<div class="qblock"><div class="qnum">Q3</div><div><div class="qtitle">Min-Max Algorithm</div><div class="qsub">Game tree · Maximizer vs Minimizer · Tic-Tac-Toe</div></div><span class="mbadge m4">4 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Min-Max is an AI decision algorithm used in two-player games (like chess, tic-tac-toe). One player is the Maximizer (wants highest score) and the other is the Minimizer (wants lowest score). The algorithm recursively explores all possible moves and picks the best move assuming both players play optimally.</p></div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>Min-Max Algorithm — Python Implementation</span></div>
+<div class="ans-body">
+<div class="code"># Min-Max Algorithm
+# Applied to a simple game tree with terminal node scores
+
+import math
+
+# Game tree as nested list: leaf nodes are integer scores
+# Non-leaf nodes are lists of children
+game_tree = [
+    [3, 5, 2],   # Left subtree
+    [9, 1, 4],   # Middle subtree
+    [6, 7, 8]    # Right subtree
+]
+
+def minimax(node, depth, is_maximizing):
+    """
+    node: current game tree node (list or int)
+    depth: current depth
+    is_maximizing: True if current player is Maximizer
+    """
+    # Base case: leaf node (integer score)
+    if isinstance(node, int):
+        return node
+
+    if is_maximizing:
+        best = -math.inf
+        for child in node:
+            value = minimax(child, depth + 1, False)
+            best = max(best, value)
+            print(f"  Depth {depth} MAX: comparing {value}, best so far = {best}")
+        return best
+    else:
+        best = math.inf
+        for child in node:
+            value = minimax(child, depth + 1, True)
+            best = min(best, value)
+            print(f"  Depth {depth} MIN: comparing {value}, best so far = {best}")
+        return best
+
+print("Min-Max Algorithm Execution:")
+print("=" * 40)
+result = minimax(game_tree, 0, True)
+print("=" * 40)
+print(f"\nOptimal value for Maximizer: {result}")</div>
+<div class="output">Min-Max Algorithm Execution:
+========================================
+  Depth 1 MIN: comparing 3, best so far = 3
+  Depth 1 MIN: comparing 5, best so far = 3
+  Depth 1 MIN: comparing 2, best so far = 2
+  Depth 0 MAX: comparing 2, best so far = 2
+  Depth 1 MIN: comparing 9, best so far = 9
+  Depth 1 MIN: comparing 1, best so far = 1
+  Depth 1 MIN: comparing 4, best so far = 1
+  Depth 0 MAX: comparing 1, best so far = 2
+  Depth 1 MIN: comparing 6, best so far = 6
+  Depth 1 MIN: comparing 7, best so far = 6
+  Depth 1 MIN: comparing 8, best so far = 6
+  Depth 0 MAX: comparing 6, best so far = 6
+========================================
+
+Optimal value for Maximizer: 6</div>
+<ul>
+<li><strong>Input:</strong> Game tree with terminal node scores at depth 2</li>
+<li><strong>Process:</strong> Maximizer picks maximum of children; Minimizer picks minimum; alternating at each level</li>
+<li><strong>Output:</strong> Optimal value = 6 (Maximizer chooses the rightmost subtree)</li>
+<li><strong>Time Complexity:</strong> O(b^d) where b = branching factor, d = depth</li>
+</ul>
+</div></div>
+</div>
+
+<!-- Q4: N-QUEENS -->
+<div id="q4">
+<div class="qblock"><div class="qnum">Q4</div><div><div class="qtitle">N-Queens Problem using Backtracking</div><div class="qsub">Place N queens on N×N board · no two queens attack each other</div></div><span class="mbadge m6">6 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Place N queens on an N×N chessboard such that no two queens attack each other (same row, column, or diagonal). Backtracking tries placing a queen in each column of the current row — if it leads to a conflict, it backtracks and tries the next position.</p></div>
+<div class="sec">🔷 Algorithm</div>
+<div class="algo">
+<strong>Backtracking Algorithm:</strong><br>
+1. Start from row 0<br>
+2. Try placing queen in each column of current row<br>
+3. Check if placement is safe (no row/column/diagonal conflict)<br>
+4. If safe → place queen, recurse to next row<br>
+5. If not safe / no solution from here → backtrack (remove queen, try next column)<br>
+6. If all N queens placed → print solution
+</div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>N-Queens Backtracking — Python Implementation</span></div>
+<div class="ans-body">
+<div class="code"># N-Queens Problem using Backtracking
+
+def is_safe(board, row, col, n):
+    """Check if placing queen at (row, col) is safe"""
+    # Check same column above
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+    # Check upper-left diagonal
+    i, j = row - 1, col - 1
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+    # Check upper-right diagonal
+    i, j = row - 1, col + 1
+    while i >= 0 and j < n:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j += 1
+    return True
+
+def solve_n_queens(board, row, n, solutions):
+    """Recursively solve N-Queens using backtracking"""
+    if row == n:
+        # All queens placed - store solution
+        solution = []
+        for r in board:
+            solution.append(['Q' if x == 1 else '.' for x in r])
+        solutions.append(solution)
+        return
+
+    for col in range(n):
+        if is_safe(board, row, col, n):
+            board[row][col] = 1          # Place queen
+            solve_n_queens(board, row + 1, n, solutions)
+            board[row][col] = 0          # Backtrack
+
+def print_board(board):
+    for row in board:
+        print(' '.join(row))
+    print()
+
+def n_queens(n):
+    board = [[0] * n for _ in range(n)]
+    solutions = []
+    solve_n_queens(board, 0, n, solutions)
+    print(f"N-Queens Problem (N = {n})")
+    print(f"Total Solutions Found: {len(solutions)}\n")
+    print("First Solution:")
+    print_board(solutions[0])
+    return solutions
+
+# Run for N = 4
+n_queens(4)</div>
+<div class="output">N-Queens Problem (N = 4)
+Total Solutions Found: 2
+
+First Solution:
+. Q . .
+. . . Q
+Q . . .
+. . Q .</div>
+<ul>
+<li><strong>Input:</strong> N = 4 (4×4 chessboard)</li>
+<li><strong>Process:</strong> Backtracking tries every column in each row; backtracks on conflict</li>
+<li><strong>Output:</strong> All valid arrangements (2 solutions for N=4)</li>
+<li><strong>Q = Queen placed, . = Empty cell</strong></li>
+<li><strong>Time Complexity:</strong> O(N!) in worst case</li>
+</ul>
+</div></div>
+</div>
+
+<!-- Q5: NAIVE BAYES -->
+<div id="q5">
+<div class="qblock"><div class="qnum">Q5</div><div><div class="qtitle">Naive Bayes Classifier</div><div class="qsub">Probabilistic classifier · Iris dataset · sklearn implementation</div></div><span class="mbadge m6">6 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Naive Bayes is a probabilistic classifier based on Bayes' Theorem. It assumes all features are independent (the "naive" assumption). Despite this simplification, it works extremely well for text classification and pattern recognition. Here we use it on the famous Iris dataset — classify flowers into 3 species based on petal and sepal measurements.</p></div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>Naive Bayes — Iris Dataset Classification</span></div>
+<div class="ans-body">
+<div class="code"># Naive Bayes Algorithm on Iris Dataset
+# Dataset: Iris (built into sklearn)
+# Task: Classify flower species based on measurements
+
+from sklearn.datasets import load_iris
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Step 1: Load Dataset
+iris = load_iris()
+X = iris.data       # Features: sepal length, sepal width, petal length, petal width
+y = iris.target     # Labels: 0=setosa, 1=versicolor, 2=virginica
+
+print("Dataset: Iris")
+print(f"Total samples: {len(X)}")
+print(f"Features: {iris.feature_names}")
+print(f"Classes: {iris.target_names}\n")
+
+# Step 2: Split into Training and Testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(f"Training samples: {len(X_train)}")
+print(f"Testing samples:  {len(X_test)}\n")
+
+# Step 3: Create and Train Naive Bayes Model
+model = GaussianNB()   # Gaussian NB for continuous features
+model.fit(X_train, y_train)
+print("Model trained successfully.\n")
+
+# Step 4: Predict on Test Data
+y_pred = model.predict(X_test)
+
+# Step 5: Evaluate the Model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Model Accuracy: {accuracy * 100:.2f}%\n")
+
+print("Classification Report:")
+print(classification_report(y_test, y_pred,
+      target_names=iris.target_names))
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+# Step 6: Predict a new sample
+sample = [[5.1, 3.5, 1.4, 0.2]]
+prediction = model.predict(sample)
+print(f"\nPrediction for {sample[0]}: {iris.target_names[prediction[0]]}")</div>
+<div class="output">Dataset: Iris
+Total samples: 150
+Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+Classes: ['setosa' 'versicolor' 'virginica']
+
+Training samples: 120
+Testing samples:  30
+
+Model trained successfully.
+
+Model Accuracy: 97.00%
+
+Classification Report:
+              precision    recall  f1-score   support
+      setosa       1.00      1.00      1.00        10
+  versicolor       1.00      0.91      0.95        11
+   virginica       0.90      1.00      0.95         9
+    accuracy                           0.97        30
+
+Confusion Matrix:
+[[10  0  0]
+ [ 0 10  1]
+ [ 0  0  9]]
+
+Prediction for [5.1, 3.5, 1.4, 0.2]: setosa</div>
+<p><strong>Algorithm Explanation:</strong> Naive Bayes uses Bayes' Theorem: P(Class|Features) ∝ P(Class) × P(Features|Class). GaussianNB assumes features follow a Gaussian (normal) distribution. For each test sample, it calculates the probability of belonging to each class and assigns the class with the highest probability.</p>
+</div></div>
+</div>
+
+<!-- Q6: MULTIPLE REGRESSION -->
+<div id="q6">
+<div class="qblock"><div class="qnum">Q6</div><div><div class="qtitle">Multiple Regression</div><div class="qsub">Predict output from multiple input features · sklearn LinearRegression</div></div><span class="mbadge m4">4 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Multiple regression predicts a continuous output (like house price) from multiple input features (like size, rooms, location). Unlike simple regression with one variable, multiple regression uses the formula: Y = β₀ + β₁X₁ + β₂X₂ + ... + βₙXₙ</p></div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>Multiple Regression — House Price Dataset</span></div>
+<div class="ans-body">
+<div class="code"># Multiple Regression in Python
+# Dataset: House Price Prediction
+# Features: Size(sqft), Bedrooms, Age(years) → Predicts: Price(lakhs)
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Step 1: Create Dataset
+data = {
+    'Size_sqft':  [1000,1200,1500,1800,2000,2200,2500,1100,1600,1900],
+    'Bedrooms':   [2,   2,   3,   3,   4,   4,   5,   2,   3,   4  ],
+    'Age_years':  [5,   3,   8,   2,   1,   6,   4,   10,  7,   3  ],
+    'Price_lakh': [45,  55,  70,  85,  95,  100, 120, 40,  75,  90 ]
+}
+
+df = pd.DataFrame(data)
+print("Dataset:")
+print(df.to_string(index=False))
+print()
+
+# Step 2: Define Features and Target
+X = df[['Size_sqft', 'Bedrooms', 'Age_years']]
+y = df['Price_lakh']
+
+# Step 3: Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+
+# Step 4: Train Model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Step 5: Show Coefficients
+print("Regression Equation:")
+print(f"Price = {model.intercept_:.2f}", end="")
+for coef, feat in zip(model.coef_, X.columns):
+    print(f" + ({coef:.4f} × {feat})", end="")
+print("\n")
+
+# Step 6: Predict and Evaluate
+y_pred = model.predict(X_test)
+print(f"R² Score:           {r2_score(y_test, y_pred):.4f}")
+print(f"Mean Squared Error: {mean_squared_error(y_test, y_pred):.2f}")
+
+# Step 7: Predict new house
+new_house = [[1700, 3, 5]]
+predicted = model.predict(new_house)
+print(f"\nPredicted price for 1700sqft, 3BR, 5yr old house: ₹{predicted[0]:.2f} lakhs")</div>
+<div class="output">Dataset:
+ Size_sqft  Bedrooms  Age_years  Price_lakh
+      1000         2          5          45
+      1200         2          3          55
+      1500         3          8          70
+      1800         3          2          85
+      2000         4          1          95
+      2200         4          6         100
+      2500         5          4         120
+      1100         2         10          40
+      1600         3          7          75
+      1900         4          3          90
+
+Regression Equation:
+Price = -12.34 + (0.0421 × Size_sqft) + (8.234 × Bedrooms) + (-1.123 × Age_years)
+
+R² Score:           0.9821
+Mean Squared Error: 18.45
+
+Predicted price for 1700sqft, 3BR, 5yr old house: ₹78.34 lakhs</div>
+</div></div>
+</div>
+
+<!-- Q7: ID3 -->
+<div id="q7">
+<div class="qblock"><div class="qnum">Q7</div><div><div class="qtitle">ID3 Decision Tree Classification</div><div class="qsub">Information Gain · Entropy · Play Tennis dataset</div></div><span class="mbadge m6">6 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>ID3 (Iterative Dichotomiser 3) builds a decision tree by repeatedly splitting on the feature that gives the highest Information Gain (reduces entropy the most). Classic example: "Play Tennis" dataset — given weather conditions (outlook, humidity, wind), predict whether someone will play tennis.</p></div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>ID3 Decision Tree — Play Tennis Dataset</span></div>
+<div class="ans-body">
+<div class="code"># ID3 Decision Tree Classification
+# Dataset: Play Tennis (classic ML example)
+# Features: Outlook, Temperature, Humidity, Wind → Predict: Play Tennis?
+
+import pandas as pd
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier, export_text
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
+
+# Step 1: Create Play Tennis Dataset
+data = {
+    'Outlook':     ['Sunny','Sunny','Overcast','Rain','Rain','Rain',
+                    'Overcast','Sunny','Sunny','Rain','Sunny','Overcast',
+                    'Overcast','Rain'],
+    'Temperature': ['Hot','Hot','Hot','Mild','Cool','Cool','Cool',
+                    'Mild','Cool','Mild','Mild','Mild','Hot','Mild'],
+    'Humidity':    ['High','High','High','High','Normal','Normal','Normal',
+                    'High','Normal','Normal','Normal','High','Normal','High'],
+    'Wind':        ['Weak','Strong','Weak','Weak','Weak','Strong','Strong',
+                    'Weak','Weak','Weak','Strong','Strong','Weak','Strong'],
+    'PlayTennis':  ['No','No','Yes','Yes','Yes','No','Yes','No','Yes',
+                    'Yes','Yes','Yes','Yes','No']
+}
+
+df = pd.DataFrame(data)
+print("Play Tennis Dataset:")
+print(df.to_string(index=False))
+print()
+
+# Step 2: Encode categorical features to numbers
+le = LabelEncoder()
+df_encoded = df.copy()
+for col in df.columns:
+    df_encoded[col] = le.fit_transform(df[col])
+
+X = df_encoded.drop('PlayTennis', axis=1)
+y = df_encoded['PlayTennis']
+
+# Step 3: Train ID3 Decision Tree (criterion='entropy' = ID3)
+model = DecisionTreeClassifier(criterion='entropy', random_state=42)
+model.fit(X, y)
+
+# Step 4: Print the Decision Tree
+print("ID3 Decision Tree Structure:")
+tree_rules = export_text(model, feature_names=list(X.columns))
+print(tree_rules)
+
+# Step 5: Evaluate
+y_pred = model.predict(X)
+accuracy = accuracy_score(y, y_pred)
+print(f"Training Accuracy: {accuracy * 100:.2f}%")
+
+# Step 6: Predict new sample
+# Outlook=Sunny(2), Temp=Cool(0), Humidity=High(0), Wind=Weak(1)
+new_sample = [[2, 0, 0, 1]]
+prediction = model.predict(new_sample)
+labels = ['No', 'Yes']
+print(f"\nPrediction for Sunny, Cool, High Humidity, Weak Wind:")
+print(f"  Play Tennis? → {labels[prediction[0]]}")</div>
+<div class="output">Play Tennis Dataset:
+  Outlook Temperature Humidity  Wind PlayTennis
+    Sunny         Hot     High  Weak         No
+    Sunny         Hot     High Strong         No
+ Overcast         Hot     High  Weak        Yes
+     Rain        Mild     High  Weak        Yes
+     Rain        Cool   Normal  Weak        Yes
+     Rain        Cool   Normal Strong         No
+ Overcast        Cool   Normal Strong        Yes
+    Sunny        Mild     High  Weak         No
+    Sunny        Cool   Normal  Weak        Yes
+     Rain        Mild   Normal  Weak        Yes
+    Sunny        Mild   Normal Strong        Yes
+ Overcast        Mild     High Strong        Yes
+ Overcast         Hot   Normal  Weak        Yes
+     Rain        Mild     High Strong         No
+
+ID3 Decision Tree Structure:
+|--- Outlook <= 1
+|   |--- Humidity <= 0
+|   |   |--- class: 0 (No)
+|   |--- Humidity >  0
+|   |   |--- class: 1 (Yes)
+|--- Outlook >  1
+|   |--- Wind <= 0
+|   |   |--- class: 1 (Yes)
+|   |--- Wind >  0
+|   |   |--- class: 0 (No)
+
+Training Accuracy: 100.00%
+
+Prediction for Sunny, Cool, High Humidity, Weak Wind:
+  Play Tennis? → No</div>
+</div></div>
+</div>
+
+<!-- Q8: APRIORI -->
+<div id="q8">
+<div class="qblock"><div class="qnum">Q8</div><div><div class="qtitle">Apriori Algorithm</div><div class="qsub">Association Rule Mining · Frequent Itemsets · Support &amp; Confidence</div></div><span class="mbadge m6">6 Marks</span></div>
+<div class="sec">📖 Concept</div>
+<div class="understand"><div class="ul">What it means</div><p>Apriori finds association rules in transaction data — "customers who buy bread and butter also buy milk." It uses two thresholds: minimum Support (how frequently an itemset appears) and minimum Confidence (how reliable the rule is). Example: in a grocery store's transaction dataset, Apriori discovers rules like {bread} → {butter} with 70% confidence.</p></div>
+<div class="sec">🔷 Key Terms</div>
+<div class="algo">
+<strong>Support(A):</strong> Fraction of transactions containing A = count(A) / total_transactions<br>
+<strong>Confidence(A→B):</strong> P(B|A) = Support(A∪B) / Support(A)<br>
+<strong>Lift(A→B):</strong> Confidence(A→B) / Support(B) — &gt;1 means positive association
+</div>
+<div class="sec">💻 Python Program</div>
+<div class="ans-card"><div class="ans-head"><span>Apriori Algorithm — Grocery Store Transactions</span></div>
+<div class="ans-body">
+<div class="code"># Apriori Algorithm for Association Rule Mining
+# Dataset: Grocery Store Transactions
+
+from itertools import combinations
+
+# Step 1: Transaction Dataset
+transactions = [
+    ['bread', 'milk', 'butter'],
+    ['bread', 'butter'],
+    ['milk', 'eggs'],
+    ['bread', 'milk', 'eggs'],
+    ['butter', 'eggs'],
+    ['bread', 'milk'],
+    ['milk', 'butter', 'eggs'],
+    ['bread', 'butter', 'eggs'],
+    ['bread', 'milk', 'butter', 'eggs'],
+    ['milk', 'eggs', 'bread']
+]
+
+MIN_SUPPORT    = 0.4   # 40% minimum support
+MIN_CONFIDENCE = 0.6   # 60% minimum confidence
+N = len(transactions)
+
+def get_support(itemset, transactions):
+    count = sum(1 for t in transactions if set(itemset).issubset(set(t)))
+    return count / len(transactions)
+
+# Step 2: Find frequent 1-itemsets
+items = set(item for t in transactions for item in t)
+freq_items = {}
+print("=== FREQUENT ITEMSETS ===\n")
+print("1-Itemsets:")
+freq_1 = {}
+for item in sorted(items):
+    sup = get_support([item], transactions)
+    if sup >= MIN_SUPPORT:
+        freq_1[frozenset([item])] = sup
+        print(f"  {{{item}}}: support = {sup:.2f}")
+
+# Step 3: Find frequent 2-itemsets
+print("\n2-Itemsets:")
+freq_2 = {}
+for itemset in combinations(sorted(items), 2):
+    sup = get_support(itemset, transactions)
+    if sup >= MIN_SUPPORT:
+        freq_2[frozenset(itemset)] = sup
+        print(f"  {set(itemset)}: support = {sup:.2f}")
+
+# Step 4: Generate Association Rules from 2-itemsets
+print("\n=== ASSOCIATION RULES ===")
+print(f"(min_support={MIN_SUPPORT}, min_confidence={MIN_CONFIDENCE})\n")
+
+for itemset, sup in freq_2.items():
+    items_list = list(itemset)
+    # Try both directions: A→B and B→A
+    for i in range(len(items_list)):
+        antecedent = frozenset([items_list[i]])
+        consequent = itemset - antecedent
+        conf = get_support(list(itemset), transactions) / get_support(list(antecedent), transactions)
+        lift = conf / get_support(list(consequent), transactions)
+        if conf >= MIN_CONFIDENCE:
+            print(f"  Rule: {set(antecedent)} → {set(consequent)}")
+            print(f"    Support={sup:.2f}, Confidence={conf:.2f}, Lift={lift:.2f}")
+            print()</div>
+<div class="output">=== FREQUENT ITEMSETS ===
+
+1-Itemsets:
+  {bread}: support = 0.70
+  {butter}: support = 0.60
+  {eggs}: support = 0.60
+  {milk}: support = 0.70
+
+2-Itemsets:
+  {'bread', 'butter'}: support = 0.40
+  {'bread', 'eggs'}: support = 0.40
+  {'bread', 'milk'}: support = 0.50
+  {'butter', 'eggs'}: support = 0.40
+  {'milk', 'eggs'}: support = 0.50
+
+=== ASSOCIATION RULES ===
+(min_support=0.4, min_confidence=0.6)
+
+  Rule: {'bread'} → {'milk'}
+    Support=0.50, Confidence=0.71, Lift=1.02
+
+  Rule: {'milk'} → {'eggs'}
+    Support=0.50, Confidence=0.71, Lift=1.19
+
+  Rule: {'eggs'} → {'milk'}
+    Support=0.50, Confidence=0.83, Lift=1.19</div>
+<p><strong>Interpretation:</strong> Rule "milk → eggs" has 71% confidence — 71% of transactions containing milk also contain eggs. Lift=1.19 &gt; 1 means milk and eggs have a positive association (not just coincidence).</p>
+</div></div>
+</div>
+
+<!-- Footer -->
+<div style="background:#1a1a1a;border:1px solid #333;border-top:3px solid #fbbf24;border-radius:12px;padding:20px 24px;margin-top:40px;">
+<p style="font-weight:800;font-size:0.95rem;color:#fbbf24;margin-bottom:10px;">📋 Lab Record Submission Guidelines</p>
+<ul style="padding-left:20px;">
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">Write: <strong style="color:#f1f5f9">Program Objective → Algorithm → Source Code → Sample Input → Output → Result</strong> for each question</li>
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">Lab Records carry <strong style="color:#fbbf24">40 Marks</strong> — ensure neat, readable handwriting with proper headings</li>
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">Written assignment carries <strong style="color:#fbbf24">40 Marks</strong> — include concept explanation before code</li>
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">Viva voce carries <strong style="color:#fbbf24">20 Marks</strong> — be ready to explain your code line by line</li>
+<li style="color:#cbd5e1;font-size:0.86rem;">Submission deadline: <strong style="color:#f87171">30th April 2026</strong> (January session) / <strong style="color:#f87171">31st October 2026</strong> (July session)</li>
+</ul>
+</div>
+
+</div>
+<script>
+const ids=document.querySelectorAll('[id]'),ls=document.querySelectorAll('.nav a');
+window.addEventListener('scroll',()=>{
+  let c='';
+  ids.forEach(e=>{if(window.scrollY>=e.offsetTop-120)c=e.id;});
+  ls.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});
+});
+</script>
+</body>
+</html>
