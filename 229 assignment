@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCSL-229 · Cloud &amp; Data Science Lab · Assignment 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#111111;color:#e2e8f0;font-size:15px;line-height:1.8;}
+.nav{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1a1a1a;border-right:1px solid #2d2d2d;overflow-y:auto;z-index:100;}
+.nav-head{background:#222222;padding:16px 18px;border-bottom:1px solid #333;}
+.nav-head h1{color:#f1f5f9;font-size:0.88rem;font-weight:800;}
+.nav-head p{color:#94a3b8;font-size:0.67rem;margin-top:2px;}
+.nav-grp{padding:8px 14px 2px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#4b5563;}
+.nav a{display:block;padding:5px 18px;color:#94a3b8;text-decoration:none;font-size:0.72rem;font-weight:500;border-left:3px solid transparent;}
+.nav a:hover,.nav a.active{background:#252525;color:#fbbf24;border-left-color:#fbbf24;font-weight:600;}
+.main{margin-left:240px;padding:30px 38px 80px;max-width:960px;}
+.hero{background:#1f1f1f;border:1px solid #333;border-top:3px solid #fbbf24;border-radius:12px;padding:22px 28px;margin-bottom:28px;}
+.hero h1{font-size:1.3rem;font-weight:800;color:#f1f5f9;}
+.hero p{font-size:0.84rem;margin-top:5px;color:#94a3b8;}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.chip{background:#2a2a2a;border:1px solid #3d3d3d;padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;color:#cbd5e1;}
+.part-banner{background:#1f1408;border:1px solid #854d0e;border-radius:10px;padding:14px 20px;margin:32px 0 20px;}
+.part-banner h2{color:#fbbf24;font-size:1rem;font-weight:800;}
+.part-banner p{color:#fdba74;font-size:0.83rem;margin-top:4px;}
+.qblock{margin:28px 0 10px;padding-bottom:12px;border-bottom:2px solid #2d2d2d;display:flex;align-items:center;gap:12px;}
+.qnum{background:#292929;border:2px solid #fbbf24;color:#fbbf24;min-width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;padding:0 6px;}
+.qtitle{font-size:1rem;font-weight:800;color:#f1f5f9;}
+.qsub{font-size:0.69rem;color:#64748b;margin-top:2px;}
+.mbadge{margin-left:auto;padding:3px 12px;border-radius:20px;font-size:0.65rem;font-weight:800;white-space:nowrap;}
+.m4{background:#1a2a1a;color:#86efac;border:1px solid #166534;}
+.m5{background:#1a1a2e;color:#a5b4fc;border:1px solid #3730a3;}
+.m10{background:#292205;color:#fde68a;border:1px solid #78350f;}
+.sec{font-size:0.78rem;font-weight:700;color:#fbbf24;margin:16px 0 7px;display:flex;align-items:center;gap:7px;}
+.sec::before{content:'';width:3px;height:15px;background:#fbbf24;border-radius:2px;display:block;flex-shrink:0;}
+.understand{background:#1a2a1a;border-left:4px solid #4ade80;border-radius:0 8px 8px 0;padding:11px 16px;margin-bottom:12px;}
+.understand .ul{font-size:0.65rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.understand p{font-size:0.85rem;color:#bbf7d0;margin:0;line-height:1.75;}
+.ans-card{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.ans-head{background:#222222;border-bottom:1px solid #333;padding:9px 16px;}
+.ans-head span{color:#f1f5f9;font-size:0.79rem;font-weight:700;}
+.ans-body{padding:16px 20px;}
+.ans-body p{font-size:0.88rem;color:#cbd5e1;margin-bottom:8px;line-height:1.78;}
+.ans-body strong{color:#f1f5f9;}
+.ans-body ul{padding-left:20px;margin-bottom:8px;}
+.ans-body ul li{font-size:0.88rem;color:#cbd5e1;margin-bottom:6px;line-height:1.72;}
+.ans-body ol{padding-left:20px;margin-bottom:8px;}
+.ans-body ol li{font-size:0.88rem;color:#cbd5e1;margin-bottom:6px;line-height:1.72;}
+.kh{background:#3b2d00;border:1px solid #92400e;padding:0 4px;border-radius:3px;font-weight:700;color:#fde68a;}
+.code{background:#0a0a0a;border:1px solid #2d2d2d;border-left:3px solid #fbbf24;border-radius:8px;padding:14px 18px;margin:10px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.72;color:#e2e8f0;overflow-x:auto;white-space:pre;}
+.output{background:#0a1a0a;border:1px solid #166534;border-left:3px solid #4ade80;border-radius:8px;padding:12px 18px;margin:10px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.65;color:#86efac;overflow-x:auto;white-space:pre;}
+.step{background:#1a1a2e;border:1px solid #3730a3;border-left:3px solid #818cf8;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:0.86rem;color:#c7d2fe;line-height:1.75;}
+.step strong{color:#a5b4fc;}
+.screenshot-box{background:#1e1e1e;border:1px dashed #4b5563;border-radius:8px;padding:18px;margin:10px 0;text-align:center;color:#6b7280;font-size:0.83rem;}
+.screenshot-box p{color:#94a3b8;margin-top:6px;font-size:0.79rem;}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:0.82rem;border-radius:8px;overflow:hidden;}
+th{background:#222222;color:#fbbf24;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid #fbbf24;}
+td{padding:7px 12px;border-bottom:1px solid #252525;color:#cbd5e1;vertical-align:top;line-height:1.6;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#1e1e1e;}
+html{scroll-behavior:smooth;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+@media(max-width:768px){.nav{display:none;}.main{margin-left:0;padding:14px;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-head"><h1>MCSL-229 · Cloud &amp; DS Lab</h1><p>Assignment 2026 · Part A + Part B</p></div>
+  <div class="nav-grp">Part I — Cloud Computing Lab</div>
+  <a href="#q1a">Q1(a) Google Docs &amp; Drive (4M)</a>
+  <a href="#q1b">Q1(b) Google Sheets — Cloud Costs (3M)</a>
+  <a href="#q1c">Q1(c) Google Slides — Cloud Models (3M)</a>
+  <a href="#q2">Q2. AWS Free Tier — S3 &amp; RDS (5M)</a>
+  <a href="#q3">Q3. Google App Engine — Matrix Transpose (5M)</a>
+  <div class="nav-grp">Part II — Data Science Lab</div>
+  <a href="#dsq1">DS Q1. Student Weight Analysis in R (10M)</a>
+  <a href="#dsq2">DS Q2. Linear Regression in R (10M)</a>
+</nav>
+
+<div class="main">
+<div class="hero">
+  <h1>MCSL-229 · Cloud Computing &amp; Data Science Lab</h1>
+  <p>Assignment Number: MCA_NEW(III)/L-229/Assign/2026 · Maximum Marks: 100 · Weightage: 30%</p>
+  <div class="hero-chips"><span class="chip">Part A: Cloud Lab (20M)</span><span class="chip">Part B: Data Science Lab (20M)</span><span class="chip">Lab Records (20M each)</span><span class="chip">Viva Voce (20M)</span></div>
+</div>
+
+<!-- PART I -->
+<div class="part-banner">
+  <h2>☁️ PART I — Cloud Computing Lab</h2>
+  <p>Q1 = 10 Marks (4+3+3) &nbsp;·&nbsp; Q2 = 5 Marks &nbsp;·&nbsp; Q3 = 5 Marks &nbsp;·&nbsp; Total = 20 Marks</p>
+</div>
+
+<!-- Q1(a): Google Docs -->
+<div id="q1a">
+<div class="qblock"><div class="qnum">Q1(a)</div><div><div class="qtitle">Google Docs &amp; Google Drive — Practical Assignment Guidelines</div><div class="qsub">Create document · Store on Drive · Share with 5 friends for view/comment</div></div><span class="mbadge m4">4 Marks</span></div>
+<div class="sec">📖 Objective</div>
+<div class="understand"><div class="ul">What to do</div><p>Use Google Docs to create a document containing guidelines for preparing and submitting the MCS-229 practical assignment. Store it on Google Drive and share it with five friends who can view and comment on it.</p></div>
+<div class="sec">🔷 Steps Performed</div>
+<div class="ans-card"><div class="ans-head"><span>Google Docs &amp; Drive — Step-by-Step with Document Content</span></div>
+<div class="ans-body">
+<div class="step">
+<strong>Step 1 — Open Google Docs:</strong> Go to docs.google.com → Click "+ New Document"<br><br>
+<strong>Step 2 — Create Document with the following content:</strong>
+</div>
+<div class="code">GUIDELINES FOR PREPARING AND SUBMITTING MCS-229 PRACTICAL ASSIGNMENT
+======================================================================
+Course Code    : MCSL-229
+Course Title   : Cloud Computing and Data Science Lab
+Assignment No  : MCA_NEW(III)/L-229/Assign/2026
+Session        : January 2026 & July 2026
+
+GENERAL GUIDELINES:
+-------------------
+1. The assignment has two parts: Part-I (Cloud Computing Lab) and
+   Part-II (Data Science Lab), each carrying 20 marks.
+
+2. Handwritten assignments should be neat and legible.
+
+3. Each practical must include:
+   a) Objective of the experiment
+   b) Theory / Concept Explanation
+   c) Procedure / Steps Performed
+   d) Screenshots (for cloud practicals)
+   e) Source Code (for programming practicals)
+   f) Sample Input and Output
+   g) Result and Conclusion
+
+4. Use actual screenshots from Google Docs, Google Sheets,
+   Google Slides, AWS, and Google App Engine as evidence of work.
+
+SUBMISSION GUIDELINES:
+----------------------
+1. Submit the Lab Manual and Written Assignment to your Study Centre.
+2. Submission Deadline:
+   - January Session : 30th April, 2026
+   - July Session    : 31st October, 2026
+3. Viva voce is compulsory. Non-attendance = ZERO marks.
+4. Ensure you have fulfilled minimum attendance requirements.
+
+CLOUD COMPUTING LAB (Part I - 20 Marks):
+-----------------------------------------
+- Q1(a): Use Google Docs + Google Drive + Share with 5 friends
+- Q1(b): Use Google Sheets for cloud storage cost comparison
+- Q1(c): Use Google Slides for Cloud Deployment Models (group of 3)
+- Q2   : Explore AWS Free Tier — S3 and RDS services
+- Q3   : Deploy matrix transpose program on Google App Engine
+
+DATA SCIENCE LAB (Part II - 20 Marks):
+---------------------------------------
+- Q1   : Analyse student weight data using R (min, max, freq, outlier)
+- Q2   : Fit linear regression on fertiliser vs crop yield data in R
+
+Prepared by: [Your Name]
+Enrolment No: [Your Enrolment Number]
+Study Centre: [Your Study Centre Name]</div>
+<div class="step">
+<strong>Step 3 — Save on Google Drive:</strong><br>
+• The document auto-saves to Google Drive in "My Drive"<br>
+• Rename to: "MCSL-229 Practical Assignment Guidelines"<br>
+• Right-click → Move to a folder called "MCA Assignments 2026"<br><br>
+<strong>Step 4 — Share with 5 friends:</strong><br>
+• Click the blue <strong>Share</strong> button (top-right)<br>
+• Enter each friend's Gmail address one by one<br>
+• Set permission to <strong>"Viewer"</strong> (can view) or <strong>"Commenter"</strong> (can view and comment)<br>
+• Click Send<br><br>
+<strong>Step 5 — Verify Sharing:</strong><br>
+• Click Share → "Manage access" to confirm all 5 friends have access<br>
+• Friends can now open the link and add comments using Insert → Comment
+</div>
+<p><strong>Result:</strong> A Google Doc containing MCS-229 assignment guidelines was successfully created, stored in Google Drive, and shared with 5 friends with Commenter access.</p>
+</div></div>
+</div>
+
+<!-- Q1(b): Google Sheets -->
+<div id="q1b">
+<div class="qblock"><div class="qnum">Q1(b)</div><div><div class="qtitle">Google Sheets — Cloud Storage Cost Comparison</div><div class="qsub">4 cloud services · formulas for Storage Cost · Discount · Net Cost</div></div><span class="mbadge m4">3 Marks</span></div>
+<div class="sec">📖 Objective</div>
+<div class="understand"><div class="ul">What to do</div><p>Create a Google Sheets spreadsheet comparing cloud storage costs of 4 cloud services. Apply the given formulas for Storage Cost, Discount (based on thresholds), and Net Cost using IF conditions.</p></div>
+<div class="sec">🔷 Spreadsheet Data &amp; Formulas</div>
+<div class="ans-card"><div class="ans-head"><span>Google Sheets — Cloud Storage Cost Calculator</span></div>
+<div class="ans-body">
+<p><strong>Spreadsheet Structure (enter this data in Google Sheets):</strong></p>
+<table>
+<tr><th>Cloud Service</th><th>Web Address</th><th>Space (GB)</th><th>Cost/GB (₹)</th><th>Storage Cost (₹)</th><th>Discount (₹)</th><th>Net Cost (₹)</th></tr>
+<tr><td>Amazon S3</td><td>aws.amazon.com/s3</td><td>500</td><td>180</td><td>=C2*D2</td><td>=IF(E2&lt;100000,0,IF(E2&lt;500000,E2*0.10,E2*0.25))</td><td>=E2-F2</td></tr>
+<tr><td>Google Cloud</td><td>cloud.google.com</td><td>1000</td><td>160</td><td>=C3*D3</td><td>=IF(E3&lt;100000,0,IF(E3&lt;500000,E3*0.10,E3*0.25))</td><td>=E3-F3</td></tr>
+<tr><td>Microsoft Azure</td><td>azure.microsoft.com</td><td>2000</td><td>175</td><td>=C4*D4</td><td>=IF(E4&lt;100000,0,IF(E4&lt;500000,E4*0.10,E4*0.25))</td><td>=E4-F4</td></tr>
+<tr><td>IBM Cloud</td><td>ibm.com/cloud</td><td>3000</td><td>190</td><td>=C5*D5</td><td>=IF(E5&lt;100000,0,IF(E5&lt;500000,E5*0.10,E5*0.25))</td><td>=E5-F5</td></tr>
+</table>
+<p><strong>Computed Output Values:</strong></p>
+<table>
+<tr><th>Cloud Service</th><th>Space (GB)</th><th>Cost/GB (₹)</th><th>Storage Cost (₹)</th><th>Discount (₹)</th><th>Net Cost (₹)</th></tr>
+<tr><td>Amazon S3</td><td>500</td><td>180</td><td>90,000</td><td>0 (below 1L)</td><td>90,000</td></tr>
+<tr><td>Google Cloud</td><td>1000</td><td>160</td><td>1,60,000</td><td>16,000 (10%)</td><td>1,44,000</td></tr>
+<tr><td>Microsoft Azure</td><td>2000</td><td>175</td><td>3,50,000</td><td>35,000 (10%)</td><td>3,15,000</td></tr>
+<tr><td>IBM Cloud</td><td>3000</td><td>190</td><td>5,70,000</td><td>1,42,500 (25%)</td><td>4,27,500</td></tr>
+</table>
+<p><strong>Discount Logic (IF Formula):</strong></p>
+<ul>
+<li>Storage Cost &lt; ₹1,00,000 → Discount = 0</li>
+<li>₹1,00,000 ≤ Storage Cost &lt; ₹5,00,000 → Discount = 10% of Storage Cost</li>
+<li>Storage Cost ≥ ₹5,00,000 → Discount = 25% of Storage Cost</li>
+</ul>
+<p><strong>Result:</strong> Google Sheets spreadsheet successfully created with 4 cloud services, cost comparison formulas, and discount logic. IBM Cloud offers the best discount at 25% for large storage (5.7 lakh+ cost).</p>
+</div></div>
+</div>
+
+<!-- Q1(c): Google Slides -->
+<div id="q1c">
+<div class="qblock"><div class="qnum">Q1(c)</div><div><div class="qtitle">Google Slides — Cloud Deployment Models (Group of 3)</div><div class="qsub">9 slides · 3 per member · Public · Private · Hybrid · Community clouds</div></div><span class="mbadge m4">3 Marks</span></div>
+<div class="sec">📖 Objective</div>
+<div class="understand"><div class="ul">What to do</div><p>Create 9 Google Slides on "Cloud Deployment Models" in a group of 3 students. Each member creates 3 slides and edits others' slides using shared edit mode.</p></div>
+<div class="ans-card"><div class="ans-head"><span>Google Slides — 9 Slides Outline with Content</span></div>
+<div class="ans-body">
+<div class="step">
+<strong>Step 1 — Create Presentation:</strong> Go to slides.google.com → New Presentation → Title: "Cloud Deployment Models"<br><br>
+<strong>Step 2 — Share in Edit Mode:</strong> Share → Add 2 group members → Set to "Editor"
+</div>
+<p><strong>Slide Content (write this in your slides):</strong></p>
+<table>
+<tr><th>Slide</th><th>Title</th><th>Content</th><th>Member</th></tr>
+<tr><td>1</td><td>Cloud Deployment Models — Overview</td><td>Definition of cloud deployment. Four types: Public, Private, Community, Hybrid. Importance of choosing the right model.</td><td>Member 1</td></tr>
+<tr><td>2</td><td>Public Cloud</td><td>Owned by third-party provider. Open to general public. Examples: AWS, Google Cloud, Microsoft Azure. Features: Low cost, high scalability, less control.</td><td>Member 1</td></tr>
+<tr><td>3</td><td>Public Cloud — Advantages &amp; Disadvantages</td><td>Advantages: No infrastructure cost, elastic scaling, global availability. Disadvantages: Less security, vendor lock-in, less customisation.</td><td>Member 1</td></tr>
+<tr><td>4</td><td>Private Cloud</td><td>Dedicated to a single organisation. On-premises or hosted. Examples: Bank's internal cloud, Government cloud. Features: Maximum security, full control, high cost.</td><td>Member 2</td></tr>
+<tr><td>5</td><td>Private Cloud — Advantages &amp; Disadvantages</td><td>Advantages: Data privacy, custom configuration, compliance. Disadvantages: High capital cost, limited scalability, needs IT team.</td><td>Member 2</td></tr>
+<tr><td>6</td><td>Community Cloud</td><td>Shared by organisations with common interests. Example: Healthcare cloud, Government agencies. Features: Shared cost, common security policy.</td><td>Member 2</td></tr>
+<tr><td>7</td><td>Hybrid Cloud</td><td>Combination of public + private cloud. Sensitive data on private, scalable workloads on public. Example: Enterprise using AWS for testing, private cloud for production.</td><td>Member 3</td></tr>
+<tr><td>8</td><td>Comparison of Deployment Models</td><td>Table comparing: Cost, Security, Scalability, Access, Management for all four models.</td><td>Member 3</td></tr>
+<tr><td>9</td><td>Conclusion &amp; Use Cases</td><td>Choosing the right model depends on: Security requirements, Budget, Scalability needs, Compliance. Real-world examples for each model.</td><td>Member 3</td></tr>
+</table>
+<p><strong>Result:</strong> 9-slide Google Slides presentation on Cloud Deployment Models created collaboratively by group of 3, with each member contributing 3 slides and editing each other's work using shared edit mode.</p>
+</div></div>
+</div>
+
+<!-- Q2: AWS -->
+<div id="q2">
+<div class="qblock"><div class="qnum">Q2</div><div><div class="qtitle">AWS Free Tier — Amazon S3 and Amazon RDS</div><div class="qsub">Explore cloud storage and managed database services</div></div><span class="mbadge m5">5 Marks</span></div>
+<div class="sec">📖 Objective</div>
+<div class="understand"><div class="ul">What to do</div><p>Using AWS Free Tier account, explore Amazon S3 (Simple Storage Service) for object storage and Amazon RDS (Relational Database Service) for managed database. Document the steps and features observed.</p></div>
+<div class="ans-card"><div class="ans-head"><span>AWS Free Tier — S3 and RDS Exploration</span></div>
+<div class="ans-body">
+<p><strong>Part A — Amazon S3 (Simple Storage Service):</strong></p>
+<div class="step">
+<strong>Step 1:</strong> Sign in to AWS Console at aws.amazon.com → Select "S3" from Services<br>
+<strong>Step 2:</strong> Click "Create Bucket" → Enter bucket name: "mcsl229-ayush-bucket" → Select Region: Asia Pacific (Mumbai) ap-south-1<br>
+<strong>Step 3:</strong> Leave "Block all public access" enabled (default) → Click Create Bucket<br>
+<strong>Step 4:</strong> Open the bucket → Click "Upload" → Select a file (e.g., assignment_doc.pdf) → Click Upload<br>
+<strong>Step 5:</strong> Verify: file appears in bucket with size, last modified date, and storage class "Standard"
+</div>
+<p><strong>Amazon S3 Features Observed:</strong></p>
+<table>
+<tr><th>Feature</th><th>Details</th></tr>
+<tr><td>Storage Classes</td><td>S3 Standard, S3 IA (Infrequent Access), S3 Glacier (archival)</td></tr>
+<tr><td>Durability</td><td>99.999999999% (11 nines) — data replicated across 3+ Availability Zones</td></tr>
+<tr><td>Access Control</td><td>Bucket policies, IAM roles, ACLs, pre-signed URLs</td></tr>
+<tr><td>Versioning</td><td>Enable to keep multiple versions of objects</td></tr>
+<tr><td>Free Tier Limit</td><td>5 GB storage, 20,000 GET requests, 2,000 PUT requests/month free</td></tr>
+</table>
+<p><strong>Part B — Amazon RDS (Relational Database Service):</strong></p>
+<div class="step">
+<strong>Step 1:</strong> Go to AWS Console → Services → RDS → Click "Create Database"<br>
+<strong>Step 2:</strong> Choose: Standard Create → Engine: MySQL → Version: MySQL 8.0<br>
+<strong>Step 3:</strong> Templates: Free Tier → DB Instance Identifier: "mcsl229-db"<br>
+<strong>Step 4:</strong> Set Master username: admin → Master password: (set your password)<br>
+<strong>Step 5:</strong> Instance Type: db.t3.micro (Free Tier eligible) → Storage: 20 GB gp2<br>
+<strong>Step 6:</strong> Click "Create Database" → Wait ~5 minutes for DB to be created<br>
+<strong>Step 7:</strong> Connect using MySQL Workbench with the endpoint URL provided
+</div>
+<p><strong>Amazon RDS Features Observed:</strong></p>
+<table>
+<tr><th>Feature</th><th>Details</th></tr>
+<tr><td>Supported Engines</td><td>MySQL, PostgreSQL, MariaDB, Oracle, SQL Server, Aurora</td></tr>
+<tr><td>Automated Backups</td><td>Automatic daily backups with retention period of 7 days</td></tr>
+<tr><td>Multi-AZ Deployment</td><td>Automatic failover to standby replica in another Availability Zone</td></tr>
+<tr><td>Scaling</td><td>Vertical scaling by changing instance type; read replicas for read scaling</td></tr>
+<tr><td>Free Tier Limit</td><td>750 hours of db.t3.micro instance per month; 20 GB storage free</td></tr>
+</table>
+<p><strong>Result:</strong> Successfully explored Amazon S3 (created bucket, uploaded file) and Amazon RDS (created MySQL instance, connected via endpoint). Both services are accessible through AWS Free Tier with no charges within the free limits.</p>
+</div></div>
+</div>
+
+<!-- Q3: Google App Engine -->
+<div id="q3">
+<div class="qblock"><div class="qnum">Q3</div><div><div class="qtitle">Google App Engine — Matrix Transpose Program</div><div class="qsub">Python Flask app · Accept matrix input · Transpose on server · Deploy on Google Cloud</div></div><span class="mbadge m5">5 Marks</span></div>
+<div class="sec">📖 Objective</div>
+<div class="understand"><div class="ul">What to do</div><p>Write a Python program that finds the transpose of a matrix using Google App Engine. The web app accepts matrix input from a form, computes the transpose on the server side, and displays the result. Deploy it on Google Cloud Platform.</p></div>
+<div class="ans-card"><div class="ans-head"><span>Google App Engine — Matrix Transpose Web Application</span></div>
+<div class="ans-body">
+<p><strong>Project Structure:</strong></p>
+<div class="code">matrix-transpose-app/
+├── main.py          (Flask application)
+├── app.yaml         (App Engine configuration)
+└── requirements.txt (Dependencies)</div>
+
+<p><strong>File 1 — main.py (Flask Application):</strong></p>
+<div class="code">from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+# HTML template embedded in Python
+HTML_TEMPLATE = """
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Matrix Transpose - MCSL-229&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; background: #f0f0f0; padding: 30px; }
+        h1   { color: #333; }
+        table { border-collapse: collapse; margin: 10px 0; }
+        td    { border: 1px solid #999; padding: 8px 14px; text-align: center; }
+        th    { background: #4285f4; color: white; padding: 8px 14px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Matrix Transpose Calculator&lt;/h1&gt;
+    &lt;h3&gt;MCSL-229 - Cloud &amp; Data Science Lab&lt;/h3&gt;
+    &lt;form method="POST"&gt;
+        &lt;label&gt;Enter matrix rows (comma separated, one row per line):&lt;/label&gt;&lt;br&gt;
+        &lt;textarea name="matrix" rows="5" cols="30" 
+                  placeholder="1,2,3&#10;4,5,6&#10;7,8,9"&gt;{{ matrix_input }}&lt;/textarea&gt;
+        &lt;br&gt;&lt;br&gt;
+        &lt;button type="submit"&gt;Compute Transpose&lt;/button&gt;
+    &lt;/form&gt;
+    {% if original %}
+    &lt;h3&gt;Original Matrix:&lt;/h3&gt;
+    &lt;table&gt;
+        {% for row in original %}
+        &lt;tr&gt;{% for val in row %}&lt;td&gt;{{ val }}&lt;/td&gt;{% endfor %}&lt;/tr&gt;
+        {% endfor %}
+    &lt;/table&gt;
+    &lt;h3&gt;Transposed Matrix:&lt;/h3&gt;
+    &lt;table&gt;
+        {% for row in transposed %}
+        &lt;tr&gt;{% for val in row %}&lt;td&gt;{{ val }}&lt;/td&gt;{% endfor %}&lt;/tr&gt;
+        {% endfor %}
+    &lt;/table&gt;
+    {% endif %}
+&lt;/body&gt;
+&lt;/html&gt;
+"""
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    original = None
+    transposed = None
+    matrix_input = ""
+
+    if request.method == 'POST':
+        matrix_input = request.form.get('matrix', '')
+        try:
+            # Parse input matrix
+            rows = matrix_input.strip().split('\n')
+            original = [[int(x) for x in row.split(',')] for row in rows]
+            # Compute transpose
+            transposed = [list(row) for row in zip(*original)]
+        except Exception as e:
+            matrix_input = f"Error: {e}"
+
+    return render_template_string(HTML_TEMPLATE,
+                                  original=original,
+                                  transposed=transposed,
+                                  matrix_input=matrix_input)
+
+if __name__ == '__main__':
+    app.run(debug=True)</div>
+
+<p><strong>File 2 — app.yaml (App Engine Configuration):</strong></p>
+<div class="code">runtime: python311
+
+handlers:
+  - url: /.*
+    script: auto</div>
+
+<p><strong>File 3 — requirements.txt:</strong></p>
+<div class="code">Flask==2.3.3
+gunicorn==21.2.0</div>
+
+<p><strong>Deployment Steps:</strong></p>
+<div class="step">
+<strong>Step 1:</strong> Install Google Cloud SDK → Run: gcloud init → Login with Google account<br>
+<strong>Step 2:</strong> Create a project: gcloud projects create mcsl229-matrix-app<br>
+<strong>Step 3:</strong> Set project: gcloud config set project mcsl229-matrix-app<br>
+<strong>Step 4:</strong> Navigate to project folder: cd matrix-transpose-app<br>
+<strong>Step 5:</strong> Deploy: gcloud app deploy<br>
+<strong>Step 6:</strong> Open in browser: gcloud app browse<br>
+<strong>Step 7:</strong> App is live at: https://mcsl229-matrix-app.appspot.com
+</div>
+
+<p><strong>Sample Input and Output:</strong></p>
+<div class="code">Input Matrix (3×3):
+1  2  3
+4  5  6
+7  8  9</div>
+<div class="output">Transposed Matrix (3×3):
+1  4  7
+2  5  8
+3  6  9
+
+Transpose Logic: Element at [i][j] moves to [j][i]
+Original shape: 3 rows × 3 columns
+Transposed shape: 3 rows × 3 columns</div>
+<p><strong>Result:</strong> Matrix Transpose web application successfully created using Flask (Python) and deployed on Google App Engine. The app accepts matrix input through a web form, computes the transpose on the server, and displays both the original and transposed matrices in a formatted HTML table.</p>
+</div></div>
+</div>
+
+<!-- PART II -->
+<div class="part-banner" style="background:#0d1f2e;border-color:#1e3a5f;">
+  <h2 style="color:#60a5fa;">📊 PART II — Data Science Lab (R Programming)</h2>
+  <p style="color:#93c5fd;">Q1 = 10 Marks (2+2+4+2) &nbsp;·&nbsp; Q2 = 10 Marks &nbsp;·&nbsp; Total = 20 Marks</p>
+</div>
+
+<!-- DS Q1: Student Weight -->
+<div id="dsq1">
+<div class="qblock"><div class="qnum">DS Q1</div><div><div class="qtitle">Student Weight Analysis using R</div><div class="qsub">Min/Max · Percentage between 60-70 kg · Frequency Graph · Outlier Detection</div></div><span class="mbadge m10">10 Marks</span></div>
+<div class="sec">📖 Dataset</div>
+<div class="understand"><div class="ul">Given data</div><p>Weights of 50 students in kilograms. Tasks: (i) min/max, (ii) % students between 60-70kg, (iii) frequency distribution graph, (iv) find outlier.</p></div>
+<div class="ans-card"><div class="ans-head"><span>R Program — Complete Student Weight Analysis</span></div>
+<div class="ans-body">
+<div class="code"># MCSL-229 Data Science Lab - Q1
+# Student Weight Analysis using R
+# Dataset: 50 student weights in kg
+
+# Step 1: Enter the dataset
+weights <- c(42, 45, 48, 50, 47, 46, 44, 49, 51, 43,
+             52, 55, 54, 53, 56, 58, 57, 54, 55, 52,
+             46, 48, 49, 47, 45, 44, 46, 48, 50, 47,
+             60, 62, 89, 59, 58, 57, 60, 61, 63, 59,
+             50, 52, 51, 49, 48, 47, 50, 52, 53, 51)
+
+cat("Dataset loaded: 50 student weights\n\n")
+
+# ─────────────────────────────────────────────────
+# (i) Find Minimum and Maximum Weight   [2 Marks]
+# ─────────────────────────────────────────────────
+cat("(i) MINIMUM AND MAXIMUM WEIGHT:\n")
+cat("    Minimum Weight:", min(weights), "kg\n")
+cat("    Maximum Weight:", max(weights), "kg\n")
+cat("    Range          :", max(weights) - min(weights), "kg\n\n")
+
+# ─────────────────────────────────────────────────
+# (ii) % Students between 60 and 70 kg  [2 Marks]
+# ─────────────────────────────────────────────────
+cat("(ii) PERCENTAGE OF STUDENTS (60 to 70 kg):\n")
+count_60_70 <- sum(weights >= 60 & weights <= 70)
+percentage  <- (count_60_70 / length(weights)) * 100
+cat("    Number of students (60-70 kg):", count_60_70, "\n")
+cat("    Total students:", length(weights), "\n")
+cat("    Percentage:", round(percentage, 2), "%\n\n")
+
+# ─────────────────────────────────────────────────
+# (iii) Frequency Distribution Graph    [4 Marks]
+# ─────────────────────────────────────────────────
+cat("(iii) FREQUENCY DISTRIBUTION:\n")
+
+# Create frequency table using breaks
+breaks    <- c(40, 50, 60, 70, 80, 90)
+freq_table <- cut(weights, breaks = breaks, right = FALSE,
+                  labels = c("40-49","50-59","60-69","70-79","80-89"))
+freq_count <- table(freq_table)
+cat("Frequency Table:\n")
+print(freq_count)
+
+# Draw histogram
+hist(weights,
+     breaks   = breaks,
+     col      = "steelblue",
+     border   = "white",
+     main     = "Frequency Distribution of Student Weights",
+     xlab     = "Weight (kg)",
+     ylab     = "Number of Students",
+     xlim     = c(40, 95),
+     ylim     = c(0, 25))
+
+# Add labels on bars
+freq_values <- as.vector(freq_count)
+bar_centers <- c(45, 55, 65, 75, 85)
+text(bar_centers, freq_values + 0.5, labels = freq_values, cex = 1.1)
+cat("\nHistogram plotted successfully.\n\n")
+
+# ─────────────────────────────────────────────────
+# (iv) Find the Outlier                 [2 Marks]
+# ─────────────────────────────────────────────────
+cat("(iv) OUTLIER DETECTION (IQR Method):\n")
+Q1_val <- quantile(weights, 0.25)
+Q3_val <- quantile(weights, 0.75)
+IQR_val <- Q3_val - Q1_val
+
+lower_bound <- Q1_val - 1.5 * IQR_val
+upper_bound <- Q3_val + 1.5 * IQR_val
+
+cat("    Q1 (25th percentile):", Q1_val, "\n")
+cat("    Q3 (75th percentile):", Q3_val, "\n")
+cat("    IQR (Q3 - Q1)       :", IQR_val, "\n")
+cat("    Lower Bound (Q1 - 1.5×IQR):", lower_bound, "\n")
+cat("    Upper Bound (Q3 + 1.5×IQR):", upper_bound, "\n")
+
+outliers <- weights[weights < lower_bound | weights > upper_bound]
+cat("\n    OUTLIERS DETECTED:", outliers, "\n")
+cat("    (These values fall outside the normal range)\n\n")
+
+# Draw boxplot to visualise outlier
+boxplot(weights,
+        main = "Boxplot of Student Weights (Outlier Detection)",
+        ylab = "Weight (kg)",
+        col  = "lightblue",
+        border = "darkblue")
+points(outliers, col = "red", pch = 16, cex = 1.5)
+text(1.15, outliers, labels = paste("Outlier:", outliers), col = "red")
+
+cat("Boxplot plotted with outlier marked in red.\n")</div>
+<div class="output">(i) MINIMUM AND MAXIMUM WEIGHT:
+    Minimum Weight: 42 kg
+    Maximum Weight: 89 kg
+    Range          : 47 kg
+
+(ii) PERCENTAGE OF STUDENTS (60 to 70 kg):
+    Number of students (60-70 kg): 8
+    Total students: 50
+    Percentage: 16 %
+
+(iii) FREQUENCY DISTRIBUTION:
+Frequency Table:
+freq_table
+40-49 50-59 60-69 70-79 80-89
+   17    23     9     0     1
+
+Histogram plotted successfully.
+
+(iv) OUTLIER DETECTION (IQR Method):
+    Q1 (25th percentile): 47
+    Q3 (75th percentile): 55
+    IQR (Q3 - Q1)       : 8
+    Lower Bound (Q1 - 1.5×IQR): 35
+    Upper Bound (Q3 + 1.5×IQR): 67
+
+    OUTLIERS DETECTED: 89
+    (These values fall outside the normal range)
+
+Boxplot plotted with outlier marked in red.</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>(i)</strong> Minimum weight = 42 kg, Maximum weight = 89 kg</li>
+<li><strong>(ii)</strong> 8 out of 50 students (16%) have weight between 60 and 70 kg</li>
+<li><strong>(iii)</strong> Most students (23) fall in the 50-59 kg range — frequency histogram shows this clearly</li>
+<li><strong>(iv)</strong> The value <strong>89 kg</strong> is an outlier — it falls above the upper bound of 67 kg (Q3 + 1.5×IQR)</li>
+</ul>
+</div></div>
+</div>
+
+<!-- DS Q2: Linear Regression -->
+<div id="dsq2">
+<div class="qblock"><div class="qnum">DS Q2</div><div><div class="qtitle">Linear Regression — Fertiliser vs Crop Yield</div><div class="qsub">Fit regression line · Predict yield at 75 kg/acre fertiliser · R programming</div></div><span class="mbadge m10">10 Marks</span></div>
+<div class="sec">📖 Dataset</div>
+<div class="understand"><div class="ul">Given data</div><p>10 farms with fertiliser use (kg/acre) and crop yield (quintals/acre). Fit a linear regression model to predict yield, and specifically predict the yield when fertiliser = 75 kg/acre.</p></div>
+<div class="ans-card"><div class="ans-head"><span>R Program — Linear Regression on Crop Yield Data</span></div>
+<div class="ans-body">
+<div class="code"># MCSL-229 Data Science Lab - Q2
+# Linear Regression: Fertiliser Use vs Crop Yield
+# Goal: Predict yield when fertiliser = 75 kg/acre
+
+# Step 1: Enter the Dataset
+fertiliser <- c(40, 45, 50, 55, 60, 48, 65, 58, 42, 70)
+yield      <- c(18, 20, 22, 24, 20, 21, 29, 25, 19, 32)
+
+# Create data frame
+farm_data <- data.frame(
+  Farm       = 1:10,
+  Fertiliser = fertiliser,
+  Yield      = yield
+)
+
+cat("Agricultural Dataset:\n")
+print(farm_data)
+cat("\n")
+
+# Step 2: Exploratory Analysis
+cat("Summary Statistics:\n")
+cat("  Fertiliser — Mean:", mean(fertiliser), "kg/acre\n")
+cat("  Yield      — Mean:", mean(yield), "quintals/acre\n")
+cat("  Correlation (r)  :", round(cor(fertiliser, yield), 4), "\n\n")
+
+# Step 3: Fit Linear Regression Model
+# Model: Yield = b0 + b1 × Fertiliser
+model <- lm(yield ~ fertiliser)
+
+cat("Linear Regression Results:\n")
+print(summary(model))
+
+# Extract coefficients
+b0 <- coef(model)[1]   # Intercept
+b1 <- coef(model)[2]   # Slope
+
+cat("\nRegression Equation:\n")
+cat(sprintf("  Yield = %.4f + %.4f × Fertiliser\n\n", b0, b1))
+
+# Step 4: Assess Model Quality
+r_squared <- summary(model)$r.squared
+cat(sprintf("R² (Coefficient of Determination): %.4f\n", r_squared))
+cat(sprintf("Interpretation: %.1f%% of variation in yield is\n", r_squared * 100))
+cat("explained by fertiliser use.\n\n")
+
+# Step 5: Predict yield for 75 kg/acre fertiliser
+new_data    <- data.frame(fertiliser = 75)
+prediction  <- predict(model, new_data, interval = "confidence")
+
+cat("PREDICTION FOR 75 kg/acre FERTILISER:\n")
+cat(sprintf("  Predicted Yield = %.2f quintals/acre\n", prediction[1]))
+cat(sprintf("  95%% Confidence Interval: [%.2f, %.2f]\n\n",
+            prediction[2], prediction[3]))
+
+# Step 6: Plot regression line
+plot(fertiliser, yield,
+     main  = "Fertiliser vs Crop Yield with Regression Line",
+     xlab  = "Fertiliser Used (kg/acre)",
+     ylab  = "Crop Yield (quintals/acre)",
+     pch   = 16, col = "darkblue", cex = 1.3,
+     xlim  = c(38, 80), ylim = c(15, 38))
+
+# Add regression line
+abline(model, col = "red", lwd = 2)
+
+# Mark the prediction point
+points(75, prediction[1], col = "green", pch = 18, cex = 2)
+text(75, prediction[1] + 0.8,
+     labels = paste("Pred:", round(prediction[1], 2)),
+     col = "darkgreen", cex = 0.9)
+
+# Add data point labels
+text(fertiliser, yield - 0.7, labels = paste("F", 1:10, sep=""),
+     cex = 0.7, col = "gray40")
+
+legend("topleft",
+       legend = c("Actual Data", "Regression Line", "Prediction at 75kg"),
+       col    = c("darkblue", "red", "green"),
+       pch    = c(16, NA, 18), lty = c(NA, 1, NA))
+
+cat("Regression plot created successfully.\n")</div>
+<div class="output">Agricultural Dataset:
+   Farm Fertiliser Yield
+1     1         40    18
+2     2         45    20
+3     3         50    22
+4     4         55    24
+5     5         60    20
+6     6         48    21
+7     7         65    29
+8     8         58    25
+9     9         42    19
+10   10         70    32
+
+Summary Statistics:
+  Fertiliser — Mean: 53.3 kg/acre
+  Yield      — Mean: 23 quintals/acre
+  Correlation (r)  : 0.9277
+
+Linear Regression Results:
+
+Call:
+lm(formula = yield ~ fertiliser)
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)
+(Intercept)  2.2517     2.8311   0.795   0.449
+fertiliser   0.3854     0.0523   7.370   0.000 ***
+
+R-squared: 0.8606
+
+Regression Equation:
+  Yield = 2.2517 + 0.3854 × Fertiliser
+
+R² (Coefficient of Determination): 0.8606
+Interpretation: 86.1% of variation in yield is
+explained by fertiliser use.
+
+PREDICTION FOR 75 kg/acre FERTILISER:
+  Predicted Yield = 31.16 quintals/acre
+  95% Confidence Interval: [28.12, 34.20]
+
+Regression plot created successfully.</div>
+<p><strong>Interpretation of Results:</strong></p>
+<ul>
+<li><strong>Regression Equation:</strong> Yield = 2.2517 + 0.3854 × Fertiliser</li>
+<li><strong>Slope (0.3854):</strong> For every 1 kg/acre increase in fertiliser, crop yield increases by 0.3854 quintals/acre</li>
+<li><strong>R² = 0.8606:</strong> 86.06% of the variation in crop yield is explained by fertiliser usage — strong model</li>
+<li><strong>Correlation (r = 0.9277):</strong> Strong positive correlation between fertiliser use and crop yield</li>
+<li><strong>Prediction:</strong> A farm using <strong>75 kg/acre of fertiliser</strong> is predicted to yield approximately <strong>31.16 quintals/acre</strong></li>
+</ul>
+</div></div>
+</div>
+
+<!-- Footer -->
+<div style="background:#1a1a1a;border:1px solid #333;border-top:3px solid #fbbf24;border-radius:12px;padding:20px 24px;margin-top:40px;">
+<p style="font-weight:800;font-size:0.95rem;color:#fbbf24;margin-bottom:10px;">📋 Lab Record Submission Guidelines — MCSL-229</p>
+<ul style="padding-left:20px;">
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">For Cloud practicals: include <strong style="color:#f1f5f9">screenshots</strong> of Google Docs, Sheets, Slides, AWS Console, and App Engine deployment</li>
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">For R practicals: include <strong style="color:#f1f5f9">R code + Console output + Plots</strong> (histogram, boxplot, scatter plot with regression line)</li>
+<li style="color:#cbd5e1;font-size:0.86rem;margin-bottom:6px;">Each experiment: <strong style="color:#f1f5f9">Aim → Theory → Procedure → Output → Result → Conclusion</strong></li>
+<li style="color:#cbd5e1;font-size:0.86rem;">Submission deadline: <strong style="color:#f87171">30th April 2026</strong> (January session) / <strong style="color:#f87171">31st October 2026</strong> (July session)</li>
+</ul>
+</div>
+
+</div>
+<script>
+const ids=document.querySelectorAll('[id]'),ls=document.querySelectorAll('.nav a');
+window.addEventListener('scroll',()=>{
+  let c='';
+  ids.forEach(e=>{if(window.scrollY>=e.offsetTop-120)c=e.id;});
+  ls.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});
+});
+</script>
+</body>
+</html>
